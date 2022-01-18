@@ -16,7 +16,7 @@ object ConvertClassToSchema{
         val schemaName = clazz.getName.toLowerCase
 
         for (field <- fieldsArray){
-            field.getAnnotations.foreach(println)
+            field.getAnnotations.foreach(x => println(x))
         }
     }
 

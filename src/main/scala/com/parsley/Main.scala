@@ -1,5 +1,7 @@
 package com.parsley
 
+import com.parsley.schema.PrimaryKey
+
 import scala.annotation.compileTimeOnly
 
 object Main {
@@ -7,9 +9,8 @@ object Main {
         ConvertClassToSchema.create(classOf[Test])
     }
 }
-@AnTest(name = "")
 class Test{
-    @AnTest(name = "")
+    @PrimaryKey
     val name:String = ""
 
     val age:Float = 1.0
