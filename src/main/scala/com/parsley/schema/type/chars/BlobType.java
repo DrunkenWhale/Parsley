@@ -1,11 +1,8 @@
 package com.parsley.schema.type.chars;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.parsley.schema.type.TypeBasic;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+
+@TypeBasic
 public @interface BlobType {
 }

@@ -1,4 +1,4 @@
-package com.parsley.schema.type.chars;
+package com.parsley.schema.type.numerical;
 
 import com.parsley.schema.type.TypeBasic;
 
