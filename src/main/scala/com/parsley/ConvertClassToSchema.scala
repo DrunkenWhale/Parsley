@@ -1,7 +1,9 @@
 package com.parsley
 
+import com.parsley.schema.chars.{CharType, VarCharType}
+
 import java.lang.reflect.Field
-import com.parsley.schema.Table
+import com.parsley.schema.{AutomaicIncrease, Column, PrimaryKey, Table, Unique}
 
 import scala.annotation.Annotation
 
@@ -11,9 +13,6 @@ class ConvertClassToSchema {
 
 object ConvertClassToSchema {
     def create(clazz: Class[_]): String = {
-        clazz.getDeclaredFields.foreach(x => println(x.getType.getName.toString + " ||| " + x.getName))
-        clazz.getDeclaredFields.foreach(x => x.getDeclaredAnnotations.foreach(y => println("+++" + y + "\n")))
-        clazz.getAnnotations.foreach(x => println(x.annotationType()))
 
         //******************************************* schema name ********************************************
 
@@ -25,16 +24,21 @@ object ConvertClassToSchema {
         //******************************************* schema column *******************************************
 
         val fieldsArray = clazz.getDeclaredFields
+        val columnStringBuilder = new StringBuilder
         for (field <- fieldsArray) {
-            val annotations = field.getDeclaredAnnotations
-            field.getDeclaredAnnotation()
+            columnStringBuilder.append(mapFieldToSqlSentence(field))
         }
+        val columnString = columnStringBuilder.result()
         //        clazz.getName.toLowerCase
 
-
-        "CREATE TABLE IF NOT EXISTS" + schemaName + "("
-
-        +");"
+        for (field <- fieldsArray){
+            if (field.getDeclaredAnnotation(classOf[PrimaryKey])!=null){
+                return "CREATE TABLE IF NOT EXISTS " + schemaName + "(\n" +
+                    columnString + " PRIMARY KEY ( " + field.getName +" ) "
+                    +  "\n);"
+            }
+        }
+        throw Exception("can't create table: " + clazz.getName + "  =>  " +"illegal annoation! please primary key annotation is exist")
     }
 
     private val getSchemaName = (clazz: Class[_]) => {
@@ -52,12 +56,31 @@ object ConvertClassToSchema {
         packageSplitArray(packageSplitArray.length - 1).toLowerCase()
     }
 
-    private val mapFieldToSqlSentence = (field: Field) => field.toString match
-        case "java.lang.String" => "TEXT"
-        case "int" => "INT"
-        case "long" => "BIGINT"
-        case "float" => "FLOAT"
-        case "double" => "DOUBLE"
-        case _ => throw Exception("Unknown SQL Type")
+    private val mapFieldToSqlSentence = (field: Field) =>
+        val column = field.getDeclaredAnnotation(classOf[Column])
+        if (column == null) {
+            ""
+        } else {
+            val columnName = if (column.name() == "") field.getName() else column.name()
+            val columnNullable = if (column.nullable()) "" else "NOT NULL"
+            val columnUnique = if (field.getDeclaredAnnotation(classOf[Unique]) != null) "UNIQUE" else ""
+            columnName + " " + (
+                field.getType.getName.toString match
+                    case "java.lang.String" =>
+                        if (field.getDeclaredAnnotation(classOf[CharType]) != null) {
+                            "CHAR(" + field.getDeclaredAnnotation(classOf[CharType]).size().toString + ")"
+                        } else if (field.getDeclaredAnnotation(classOf[VarCharType]) != null) {
+                            "VARCHAR(" + field.getDeclaredAnnotation(classOf[CharType]).size().toString + ")"
+                        } else {
+                            "TEXT"
+                        }
+                    case "int" => "INT " + (if (field.getDeclaredAnnotation(classOf[AutomaicIncrease]) != null) "AUTO_INCREMENT " else "")
+                    case "long" => "BIGINT " + (if (field.getDeclaredAnnotation(classOf[AutomaicIncrease]) != null) "AUTO_INCREMENT " else "")
+                    case "float" => "FLOAT"
+                    case "double" => "DOUBLE"
+                    case x => throw Exception(s"this SQL data type: $x is not be implemented")
+
+                ) + " " + columnUnique + " " + columnNullable + ",\n"
+        }
 
 }
