@@ -3,7 +3,7 @@ package com.parsley
 import com.parsley.schema.chars.{CharType, VarCharType}
 
 import java.lang.reflect.Field
-import com.parsley.schema.{AutomaicIncrease, Column, PrimaryKey, Table, Unique}
+import com.parsley.schema.{AutomaicIncrease, Column, PrimaryKey, ClassToSchema, Unique}
 
 import scala.annotation.Annotation
 
@@ -42,7 +42,7 @@ object ConvertClassToSchema {
     }
 
     private val getSchemaName = (clazz: Class[_]) => {
-        clazz.getDeclaredAnnotation(classOf[Table])
+        clazz.getDeclaredAnnotation(classOf[ClassToSchema])
         match {
             case null => getPackageSplitArray(clazz)
             case x =>
@@ -74,6 +74,7 @@ object ConvertClassToSchema {
                         } else {
                             "TEXT"
                         }
+                    case "char" => "CHAR(1)"
                     case "int" => "INT " + (if (field.getDeclaredAnnotation(classOf[AutomaicIncrease]) != null) "AUTO_INCREMENT " else "")
                     case "long" => "BIGINT " + (if (field.getDeclaredAnnotation(classOf[AutomaicIncrease]) != null) "AUTO_INCREMENT " else "")
                     case "float" => "FLOAT"
