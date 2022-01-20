@@ -1,5 +1,7 @@
 package com.parsley.v2
 
+import com.parsley.v2.annotation.Text
+
 import java.sql.DriverManager
 
 object Main {
