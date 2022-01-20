@@ -1,4 +1,4 @@
-package com.parsley.schema;
+package com.parsley.v1.schema;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

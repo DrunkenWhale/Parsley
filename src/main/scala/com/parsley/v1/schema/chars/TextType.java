@@ -1,4 +1,4 @@
-package com.parsley.schema.chars;
+package com.parsley.v1.schema.chars;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface VarCharType {
-    int size() default 65535;
+public @interface TextType {
 }

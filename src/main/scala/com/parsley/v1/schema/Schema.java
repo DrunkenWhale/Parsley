@@ -1,4 +1,4 @@
-package com.parsley.schema;
+package com.parsley.v1.schema;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ClassToSchema {
+public @interface Schema {
     public String schemaName() default "";
 }

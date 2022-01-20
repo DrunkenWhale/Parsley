@@ -1,10 +1,9 @@
-package com.parsley
+package com.parsley.v1
 
-import com.parsley.schema.chars.{CharType, VarCharType}
+import com.parsley.v1.schema.chars.{CharType, VarCharType}
+import com.parsley.v1.schema.*
 
 import java.lang.reflect.Field
-import com.parsley.schema.{AutomaicIncrease, Column, PrimaryKey, ClassToSchema, Unique}
-
 import scala.annotation.Annotation
 
 class ConvertClassToSchema {
@@ -42,7 +41,7 @@ object ConvertClassToSchema {
     }
 
     private val getSchemaName = (clazz: Class[_]) => {
-        clazz.getDeclaredAnnotation(classOf[ClassToSchema])
+        clazz.getDeclaredAnnotation(classOf[Schema])
         match {
             case null => getPackageSplitArray(clazz)
             case x =>

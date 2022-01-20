@@ -1,8 +1,7 @@
-package com.parsley.test
+package com.parsley.v1
 
-import com.parsley.schema.{Column, PrimaryKey, ClassToSchema}
-import com.parsley.ConvertClassToSchema
-import com.parsley.schema.chars.CharType
+import com.parsley.v1.schema.chars.CharType
+import com.parsley.v1.schema.{Column, PrimaryKey, Schema}
 
 import scala.annotation.compileTimeOnly
 
@@ -12,7 +11,7 @@ object Main {
     }
 }
 
-@ClassToSchema
+@Schema
 class Test {
 
     @Column
