@@ -6,18 +6,10 @@ import scala.annotation.meta.{beanGetter, field, getter}
 object Main {
 
     def main(args: Array[String]): Unit = {
-        val a = student(1,Text("114514"),"sss")
-        //        student(1,"q").productIteratorobject Main {
-        ////    def main(args: Array[String]): Unit = {
-        ////        Class.forName("com.mysql.cj.jdbc.Driver")
-        ////        val connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test","root","3777777")
-        ////        val resultSet = connection.prepareStatement("select * from author;").executeQuery()
-        ////        while (resultSet.next()){
-        ////            println(resultSet)
-        ////        }
-        ////    }
-        println(a.transcation().create(primaryKey = "age",uniqueColumns = List("age")))
+        val a = student(1, Text("114514"), "sss")
+        //        println(a.transcation().create(primaryKey = "age",uniqueColumns = List("age")))
+        println(a.transcation().query(""))
     }
 }
 
-case class student(age: Int,text:Text,test:String)
+case class student(age: Int, text: Text, test: String)

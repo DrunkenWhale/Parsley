@@ -36,7 +36,7 @@ object Transcation {
 class Transcation(val obj: AnyRef) {
 
     private val caseClass = obj.asInstanceOf[Product]
-
+    
     private val schemaName = obj.asInstanceOf[Product].productPrefix
 
     private val caseClassColumnsSet: Seq[(String, Any)] =
@@ -47,7 +47,12 @@ class Transcation(val obj: AnyRef) {
         }
 
     def query(constraint: String) = {
+        val parameterSeq = caseClassColumnsSet.map(x=>x._2)
+        val c = Class.forName("scala.Tuple" + caseClassColumnsSet.size).getConstructors.head.newInstance()
+        println(c)
+        println(c.getClass.getSimpleName)
 
+        println (obj.getClass.getConstructors.head.newInstance())
 //        val resultInterator = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
 //        while (resultInterator.next()) {
 //
