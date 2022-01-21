@@ -1,8 +1,9 @@
 package com.parsley.v2
 
 import com.parsley.v1.schema.PrimaryKey
-import com.parsley.v2.Transcation.convertClassToSchema
+import com.parsley.v2.Transcation.{connection, convertClassToSchema}
 
+import java.sql.DriverManager
 import scala.collection.mutable
 import scala.quoted.Type
 import scala.reflect.{ClassTag, classTag}
@@ -13,6 +14,12 @@ import scala.reflect.{ClassTag, classTag}
  * T type must be a case class
  * */
 object Transcation {
+
+
+    Class.forName("com.mysql.cj.jdbc.Driver")
+
+    val connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "3777777")
+
     private val convertClassToSchema: String => String = (dataType: String) => dataType match {
         case "Integer" => "INT"
         case "Long" => "BIGINT"
@@ -28,15 +35,27 @@ object Transcation {
 
 class Transcation(val obj: AnyRef) {
 
-    val schemaName = obj.asInstanceOf[Product].productPrefix
+    private val caseClass = obj.asInstanceOf[Product]
 
-    def query() = {
+    private val schemaName = obj.asInstanceOf[Product].productPrefix
+
+    private val caseClassColumnsSet: Seq[(String, Any)] =
+        for (index <- 0 until caseClass.productArity) yield {
+            val columnName = caseClass.productElementName(index)
+            val columnValue = caseClass.productElement(index)
+            (columnName, columnValue)
+        }
+
+    def query(constraint: String) = {
+
+//        val resultInterator = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
+//        while (resultInterator.next()) {
+//
+//        }
 
     }
 
-    def create(primaryKey: String, uniqueColumns: Seq[String] = Seq(), nullableColumns: Seq[String] = Seq()): String = {
-
-        val caseClass = obj.asInstanceOf[Product]
+    def create(primaryKey: String, uniqueColumns: Seq[String] = Seq(), nullableColumns: Seq[String] = Seq()): Unit = {
 
         val uniqueFieldSet = uniqueColumns.toSet[String]
 
@@ -44,13 +63,11 @@ class Transcation(val obj: AnyRef) {
 
         var columnsSentence: String = ""
 
-        for (index <- 0 until caseClass.productArity) {
-            val columnName = caseClass.productElementName(index)
-            val columnValue = caseClass.productElement(index)
+        for ((name, value) <- caseClassColumnsSet) {
             columnsSentence +=
-                (s"$columnName ${convertClassToSchema(columnValue.getClass.getSimpleName)} "
-                    + s"${if (nullableFieldSet.contains(columnName)) "NOT NULL" else ""} "
-                    + s"${if (uniqueFieldSet.contains(columnName)) "UNIQUE" else ""} ,\n")
+                (s"$name ${convertClassToSchema(value.getClass.getSimpleName)} "
+                    + s"${if (!nullableFieldSet.contains(name)) "NOT NULL" else ""} "
+                    + s"${if (uniqueFieldSet.contains(name)) "UNIQUE" else ""} ,\n")
         }
 
         val sqlSentence: String =
@@ -58,9 +75,9 @@ class Transcation(val obj: AnyRef) {
                |CREATE TABLE $schemaName (
                |$columnsSentence
                |PRIMARY KEY ( $primaryKey )
-               |)""".stripMargin
+               |);""".stripMargin
 
-        return sqlSentence
+        connection.prepareStatement(sqlSentence).execute();
     }
 
     //    def update(): Boolean = {

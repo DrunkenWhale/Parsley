@@ -6,7 +6,7 @@ import scala.annotation.meta.{beanGetter, field, getter}
 object Main {
 
     def main(args: Array[String]): Unit = {
-        val a = student(1,Text("114514"))
+        val a = student(1,Text("114514"),"sss")
         //        student(1,"q").productIteratorobject Main {
         ////    def main(args: Array[String]): Unit = {
         ////        Class.forName("com.mysql.cj.jdbc.Driver")
@@ -16,8 +16,8 @@ object Main {
         ////            println(resultSet)
         ////        }
         ////    }
-        a.transcation().query()
+        println(a.transcation().create(primaryKey = "age",uniqueColumns = List("age")))
     }
 }
 
-case class student(age: Int,text:Text)
+case class student(age: Int,text:Text,test:String)
