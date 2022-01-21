@@ -8,7 +8,7 @@ object Main {
     def main(args: Array[String]): Unit = {
         val a = student(1, Text("114514"), "sss")
         //        println(a.transcation().create(primaryKey = "age",uniqueColumns = List("age")))
-        println(a.transcation().query(""))
+        a.transcation().query()
     }
 }
 

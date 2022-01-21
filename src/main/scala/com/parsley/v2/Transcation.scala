@@ -33,10 +33,10 @@ object Transcation {
     }
 }
 
-class Transcation(val obj: AnyRef) {
+class Transcation[T](val obj: T) {
 
     private val caseClass = obj.asInstanceOf[Product]
-    
+
     private val schemaName = obj.asInstanceOf[Product].productPrefix
 
     private val caseClassColumnsSet: Seq[(String, Any)] =
@@ -46,14 +46,13 @@ class Transcation(val obj: AnyRef) {
             (columnName, columnValue)
         }
 
-    def query(constraint: String) = {
-        val parameterSeq = caseClassColumnsSet.map(x=>x._2)
-        val result = InvokeCaseClass.getCaseClassWithInstance(caseClass,parameterSeq)
-        result.asInstanceOf
-//        val resultInterator = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
-//        while (resultInterator.next()) {
-//
-//        }
+    def query(constraint: String=""):T= {
+        val parameterSeq = caseClassColumnsSet.map(x => x._2)
+        InvokeCaseClass.getCaseClassWithInstance(caseClass, parameterSeq).asInstanceOf[T]
+        //        val resultInterator = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
+        //        while (resultInterator.next()) {
+        //
+        //        }
 
     }
 
