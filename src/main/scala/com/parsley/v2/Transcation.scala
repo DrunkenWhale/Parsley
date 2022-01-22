@@ -1,9 +1,9 @@
 package com.parsley.v2
 
 import com.parsley.v1.schema.PrimaryKey
-import com.parsley.v2.Transcation.{connection, convertClassToSchema}
+import com.parsley.v2.Transcation.{connection, convertClassToSchema, getColumnFromResultSet}
 
-import java.sql.DriverManager
+import java.sql.{DriverManager, ResultSet}
 import scala.collection.mutable
 import scala.quoted.Type
 import scala.reflect.{ClassTag, classTag}
@@ -19,6 +19,18 @@ object Transcation {
     Class.forName("com.mysql.cj.jdbc.Driver")
 
     val connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "3777777")
+
+    private val getColumnFromResultSet: (String, ResultSet, Int) => Any = (dataType: String, resultSet: ResultSet, index:Int) => dataType match {
+        case "Integer" => resultSet.getInt(index)
+        case "Long" => resultSet.getLong(index)
+        case "Float" => resultSet.getFloat(index)
+        case "Double" => resultSet.getDouble(index)
+        case "Boolean" => if(resultSet.getInt(index)==0) false else true
+        case "String" => resultSet.getString(index)
+        case "Character" => resultSet.getString(index).indexOf(0)
+        case "Text" => resultSet.getObject(index,classOf[Text])
+        case x => throw Exception(s" type: $x not be implement ")
+    }
 
     private val convertClassToSchema: String => String = (dataType: String) => dataType match {
         case "Integer" => "INT"
@@ -46,14 +58,20 @@ class Transcation[T](val obj: T) {
             (columnName, columnValue)
         }
 
-    def query(constraint: String=""):T= {
-        val parameterSeq = caseClassColumnsSet.map(x => x._2)
-        InvokeCaseClass.getCaseClassWithInstance(caseClass, parameterSeq).asInstanceOf[T]
-        //        val resultInterator = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
-        //        while (resultInterator.next()) {
-        //
-        //        }
+    def queryAll(constraint: String = ""): Seq[T] = {
+        val parameterTypeSeq = caseClassColumnsSet.map(x => x._2.getClass.getSimpleName)
 
+        val resultSet = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
+
+        var caseClassSeq: Seq[T] = Seq[T]()
+
+        while (resultSet.next()) {
+            val parameterSeq:Seq[Any] = for (i <- 0 until parameterTypeSeq.size) yield {
+                getColumnFromResultSet(parameterTypeSeq(i),resultSet,i+1)
+            }
+            caseClassSeq = caseClassSeq.appended(InvokeCaseClass.getCaseClassWithInstance(caseClass,parameterSeq).asInstanceOf[T])
+        }
+        caseClassSeq
     }
 
     def create(primaryKey: String, uniqueColumns: Seq[String] = Seq(), nullableColumns: Seq[String] = Seq()): Unit = {
