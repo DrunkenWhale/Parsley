@@ -1,8 +1,9 @@
 package com.parsley.v2
 
 import java.lang.reflect.Constructor
+import java.sql.{PreparedStatement, ResultSet}
 
-object InvokeCaseClass {
+object TypeMapping {
     def getCaseClassWithInstance(obj: Product, parameter: Seq[Any]): Any = {
         val constructor: Constructor[_] = obj.getClass.getConstructors.head
         parameter.size match {
@@ -55,4 +56,41 @@ object InvokeCaseClass {
             case _ => throw Exception("Illeagl Arguments")
         }
     }
+
+    val convertClassToSchema: String => String = (dataType: String) => dataType match {
+        case "Integer" => "INT"
+        case "Long" => "BIGINT"
+        case "Float" => "FLOAT"
+        case "Double" => "DOUBLE"
+        case "Boolean" => "INT"
+        case "String" => "CHAR(255)"
+        case "Character" => "CHAR(1)"
+        case "Text" => "TEXT"
+        case x => throw Exception(s" type: $x not be implement ")
+    }
+
+    val getColumnFromResultSet: (String, ResultSet, Int) => Any = (dataType: String, resultSet: ResultSet, index: Int) => dataType match {
+        case "Integer" => resultSet.getInt(index)
+        case "Long" => resultSet.getLong(index)
+        case "Float" => resultSet.getFloat(index)
+        case "Double" => resultSet.getDouble(index)
+        case "Boolean" =>resultSet.getBoolean(index)// if (resultSet.getInt(index) == 0) false else true
+        case "String" => resultSet.getString(index)
+        case "Character" => resultSet.getString(index).indexOf(0)
+        case "Text" => Text(resultSet.getString(index))
+        case x => throw Exception(s" type: $x not be implement ")
+    }
+
+    val setColumnFromCaseClass: (Any, PreparedStatement, Int) => Unit = (data: Any, preparedStatement:PreparedStatement, index: Int) => data.getClass.getSimpleName match {
+        case "Integer" => preparedStatement.setInt(index,data.asInstanceOf[Int])
+        case "Long" => preparedStatement.setLong(index,data.asInstanceOf[Long])
+        case "Float" => preparedStatement.setFloat(index,data.asInstanceOf[Float])
+        case "Double" => preparedStatement.setDouble(index,data.asInstanceOf[Double])
+        case "Boolean" => preparedStatement.setBoolean(index,data.asInstanceOf[Boolean])
+        case "String" => preparedStatement.setString(index,data.asInstanceOf[String])
+        case "Character" => preparedStatement.setString(index,data.asInstanceOf[Character].toString)
+        case "Text" => preparedStatement.setString(index,data.asInstanceOf[Text].toString())
+        case x => throw Exception(s" type: $x not be implement ")
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.parsley.v2
 
 import com.parsley.v1.schema.PrimaryKey
-import com.parsley.v2.Transcation.{connection, convertClassToSchema, getColumnFromResultSet}
+import com.parsley.v2.Transcation.connection
 
 import java.sql.{DriverManager, ResultSet}
 import scala.collection.mutable
@@ -20,29 +20,6 @@ object Transcation {
 
     val connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "3777777")
 
-    private val getColumnFromResultSet: (String, ResultSet, Int) => Any = (dataType: String, resultSet: ResultSet, index:Int) => dataType match {
-        case "Integer" => resultSet.getInt(index)
-        case "Long" => resultSet.getLong(index)
-        case "Float" => resultSet.getFloat(index)
-        case "Double" => resultSet.getDouble(index)
-        case "Boolean" => if(resultSet.getInt(index)==0) false else true
-        case "String" => resultSet.getString(index)
-        case "Character" => resultSet.getString(index).indexOf(0)
-        case "Text" => resultSet.getObject(index,classOf[Text])
-        case x => throw Exception(s" type: $x not be implement ")
-    }
-
-    private val convertClassToSchema: String => String = (dataType: String) => dataType match {
-        case "Integer" => "INT"
-        case "Long" => "BIGINT"
-        case "Float" => "FLOAT"
-        case "Double" => "DOUBLE"
-        case "Boolean" => "INT"
-        case "String" => "CHAR(255)"
-        case "Character" => "CHAR(1)"
-        case "Text" => "TEXT"
-        case x => throw Exception(s" type: $x not be implement ")
-    }
 }
 
 class Transcation[T](val obj: T) {
@@ -58,22 +35,6 @@ class Transcation[T](val obj: T) {
             (columnName, columnValue)
         }
 
-    def queryAll(constraint: String = ""): Seq[T] = {
-        val parameterTypeSeq = caseClassColumnsSet.map(x => x._2.getClass.getSimpleName)
-
-        val resultSet = connection.prepareStatement(s"SELECT * FROM $schemaName " + constraint).executeQuery()
-
-        var caseClassSeq: Seq[T] = Seq[T]()
-
-        while (resultSet.next()) {
-            val parameterSeq:Seq[Any] = for (i <- 0 until parameterTypeSeq.size) yield {
-                getColumnFromResultSet(parameterTypeSeq(i),resultSet,i+1)
-            }
-            caseClassSeq = caseClassSeq.appended(InvokeCaseClass.getCaseClassWithInstance(caseClass,parameterSeq).asInstanceOf[T])
-        }
-        caseClassSeq
-    }
-
     def create(primaryKey: String, uniqueColumns: Seq[String] = Seq(), nullableColumns: Seq[String] = Seq()): Unit = {
 
         val uniqueFieldSet = uniqueColumns.toSet[String]
@@ -84,7 +45,7 @@ class Transcation[T](val obj: T) {
 
         for ((name, value) <- caseClassColumnsSet) {
             columnsSentence +=
-                (s"$name ${convertClassToSchema(value.getClass.getSimpleName)} "
+                (s"$name ${TypeMapping.convertClassToSchema(value.getClass.getSimpleName)} "
                     + s"${if (!nullableFieldSet.contains(name)) "NOT NULL" else ""} "
                     + s"${if (uniqueFieldSet.contains(name)) "UNIQUE" else ""} ,\n")
         }
@@ -99,13 +60,56 @@ class Transcation[T](val obj: T) {
         connection.prepareStatement(sqlSentence).execute();
     }
 
+    /**
+     * query database to get all the line in this table
+     *
+     * @return list of given case class
+     *
+     * */
+    def query(): Seq[T] = {
+        val parameterTypeSeq = caseClassColumnsSet.map(x => x._2.getClass.getSimpleName)
+
+        val resultSet = connection.prepareStatement(s"SELECT * FROM $schemaName;").executeQuery()
+
+        var caseClassSeq: Seq[T] = Seq[T]()
+
+        while (resultSet.next()) {
+            val parameterSeq: Seq[Any] = for (i <- 0 until parameterTypeSeq.size) yield {
+                TypeMapping.getColumnFromResultSet(parameterTypeSeq(i), resultSet, i + 1)
+            }
+            caseClassSeq = caseClassSeq appended (TypeMapping.getCaseClassWithInstance(caseClass, parameterSeq).asInstanceOf[T])
+        }
+        caseClassSeq
+    }
+
+    def insert() = {
+        val tempColumnSeqString = caseClassColumnsSet.map(x => x._1).toString().substring(6)
+        val tempQuestionMarkString = (new StringBuilder).append((for (i <- 1 to caseClassColumnsSet.size) yield "?")
+            .toString()).delete(0, 6).result()
+        val statement = connection.prepareStatement(s"INSERT INTO $schemaName  $tempColumnSeqString   VALUES  $tempQuestionMarkString;")
+        for(index <- 0 until caseClassColumnsSet.size){
+            TypeMapping.setColumnFromCaseClass(caseClassColumnsSet(index)._2,statement,index+1)
+        }
+        statement.execute()
+    }
+
+
+    /**
+     * create table in the database with given case class
+     *
+     * must given which column is primary key
+     *
+     * all basic type will be mapping to sql type
+     * specially,Text class will be mapping to TEXT
+     * String will be mapping to CHAR(255)
+     * */
+
+
     //    def update(): Boolean = {
     //
     //    }
     //
-    //    def insert(): Boolean = {
-    //
-    //    }
+
     //
     //    def delete(): Boolean = {
     //

@@ -6,11 +6,8 @@ import scala.annotation.meta.{beanGetter, field, getter}
 object Main {
 
     def main(args: Array[String]): Unit = {
-        val a = student(1, 7.7)
-//        a.transcation().create("age")
-        a.transcation().queryAll().foreach(println)
-        //        println(a.transcation().create(primaryKey = "age",uniqueColumns = List("age")))
-        println(a.transcation().queryAll())
+        val a = student(1, 7.7).transcation().query().foreach(println)
+        a.transcation().insert()
     }
 }
 
