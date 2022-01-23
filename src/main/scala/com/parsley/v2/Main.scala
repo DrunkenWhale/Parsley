@@ -6,9 +6,13 @@ import scala.annotation.meta.{beanGetter, field, getter}
 object Main {
 
     def main(args: Array[String]): Unit = {
-        val a = student(1, 7.7).transcation().query().foreach(println)
-        a.transcation().insert()
+
+        val p = Person(114514,"野兽先辈",true)
+        p.transcation().create("age")
+        p.transcation().insert()
+        p.transcation().query().foreach(println)
+
     }
 }
 
-case class student(age: Int,miaomiaomiao:Double)
+case class Person(age:Int,name:String,gender:Boolean)

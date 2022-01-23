@@ -1,4 +1,4 @@
-package com.parsley.v2
+package com.parsley.v2.`type`
 
 
 /**

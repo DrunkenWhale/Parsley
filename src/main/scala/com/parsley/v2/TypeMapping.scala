@@ -1,5 +1,7 @@
 package com.parsley.v2
 
+import com.parsley.v2.`type`.Text
+
 import java.lang.reflect.Constructor
 import java.sql.{PreparedStatement, ResultSet}
 

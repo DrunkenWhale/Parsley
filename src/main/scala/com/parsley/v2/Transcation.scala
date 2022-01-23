@@ -82,13 +82,13 @@ class Transcation[T](val obj: T) {
         caseClassSeq
     }
 
-    def insert() = {
+    def insert(): Unit = {
         val tempColumnSeqString = caseClassColumnsSet.map(x => x._1).toString().substring(6)
         val tempQuestionMarkString = (new StringBuilder).append((for (i <- 1 to caseClassColumnsSet.size) yield "?")
             .toString()).delete(0, 6).result()
         val statement = connection.prepareStatement(s"INSERT INTO $schemaName  $tempColumnSeqString   VALUES  $tempQuestionMarkString;")
-        for(index <- 0 until caseClassColumnsSet.size){
-            TypeMapping.setColumnFromCaseClass(caseClassColumnsSet(index)._2,statement,index+1)
+        for (index <- 0 until caseClassColumnsSet.size) {
+            TypeMapping.setColumnFromCaseClass(caseClassColumnsSet(index)._2, statement, index + 1)
         }
         statement.execute()
     }
@@ -105,10 +105,10 @@ class Transcation[T](val obj: T) {
      * */
 
 
-    //    def update(): Boolean = {
-    //
-    //    }
-    //
+    def update(): Unit = {
+
+    }
+
 
     //
     //    def delete(): Boolean = {
