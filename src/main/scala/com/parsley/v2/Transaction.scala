@@ -1,7 +1,7 @@
 package com.parsley.v2
 
 import com.parsley.v1.schema.PrimaryKey
-import com.parsley.v2.Transcation.connection
+import com.parsley.v2.Transaction.connection
 
 import java.sql.{DriverManager, ResultSet}
 import scala.collection.mutable
@@ -13,7 +13,7 @@ import scala.reflect.{ClassTag, classTag}
  * In this version
  * T type must be a case class
  * */
-object Transcation {
+object Transaction {
 
 
     Class.forName("com.mysql.cj.jdbc.Driver")
@@ -22,7 +22,7 @@ object Transcation {
 
 }
 
-class Transcation[T](val obj: T) {
+class Transaction[T](val obj: T) {
 
     private val caseClass = obj.asInstanceOf[Product]
 

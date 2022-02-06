@@ -4,7 +4,7 @@ import java.sql.DriverManager
 
 implicit class ConvertToTranscation[T](x:T) {
     def transcation() ={
-        new Transcation(x)
+        new Transaction(x)
     }
 }
 
