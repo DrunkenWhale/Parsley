@@ -4,7 +4,7 @@ import com.parsley.v3.connect.connection.{DataBaseConnection, MysqlConnection}
 
 import java.sql.{Connection, DriverManager}
 
-class DataBaseManager[T <: DataBaseConnection](databaseConnection: T) {
+class DataBaseManager(databaseConnection: DataBaseConnection) {
 
     private val connection: Connection = connect()
 
@@ -19,17 +19,17 @@ class DataBaseManager[T <: DataBaseConnection](databaseConnection: T) {
 
 object DataBaseManager {
 
-    private var dataBaseManager: DataBaseManager[DataBaseConnection] = null
+    private var dataBaseManager: DataBaseManager | Null = null
 
     // singleton instance
     // not thread safe
-    def apply[T <: DataBaseConnection](databaseConnection: T): DataBaseManager[T] = {
+    def apply(databaseConnection: DataBaseConnection): DataBaseManager = {
         if (dataBaseManager == null) {
             this.dataBaseManager = new DataBaseManager(databaseConnection)
             return dataBaseManager
         } else {
-            dataBaseManager
+            return dataBaseManager
         }
     }
-    
+
 }
