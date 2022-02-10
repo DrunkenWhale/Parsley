@@ -3,6 +3,7 @@ package com.parsley
 //import com.parsley.dsl.MethodIsClass
 
 import com.parsley.dsl.*
+import com.parsley.dsl.Operation.{AddIsMethod, AddNamedMethod, declare}
 
 class Schema{
     val name="野兽先辈"

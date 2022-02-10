@@ -1,6 +1,6 @@
 package com.parsley.dsl
 
-class SchemaColumn(val columnType: String,
+protected class SchemaColumn(val columnType: String,
                    val columnName: String,
                    val primaryKey: Boolean = false,
                    val unique: Boolean = false,
@@ -10,7 +10,5 @@ class SchemaColumn(val columnType: String,
     def getColumnSQL(): String = {
         s"$columnName $columnType " //TODO finish mapping
     }
-
     
-
 }
