@@ -1,6 +1,7 @@
-package com.parsley.v3.connect
+package com.parsley.connect
 
-import com.parsley.v3.connect.connection.{DataBaseConnection, MysqlConnection}
+
+import com.parsley.connect.connection.{DataBaseConnection, MysqlConnection}
 
 import java.sql.{Connection, DriverManager}
 

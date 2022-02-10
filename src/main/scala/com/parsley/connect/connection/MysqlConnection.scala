@@ -1,4 +1,4 @@
-package com.parsley.v3.connect.connection
+package com.parsley.connect.connection
 
 case class MysqlConnection(val database: String,
                            val user: String = "root",

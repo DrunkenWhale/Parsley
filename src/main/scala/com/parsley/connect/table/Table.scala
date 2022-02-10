@@ -1,4 +1,4 @@
-package com.parsley.v3.connect.table
+package com.parsley.connect.table
 
 class Table(clazz: Class[_]) {
 
