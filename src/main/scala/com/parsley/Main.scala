@@ -3,7 +3,9 @@ package com.parsley
 //import com.parsley.dsl.MethodIsClass
 
 import com.parsley.dsl.*
-import com.parsley.dsl.Operation.{AddIsMethod, AddNamedMethod, declare}
+import com.parsley.dsl.Operation.declare
+import dsl.convert.AddIsMethod
+import dsl.convert.AddNamedMethod
 
 class Schema{
     val name="野兽先辈"
@@ -19,5 +21,6 @@ object Main {
         on[Schema](schema=>declare(
             schema.name named "下北泽" is PrimaryKey
         ))
+        println(SchemaColumn.convertSchemaColumnClassToSQL(new Schema().name named "下北泽" is PrimaryKey))
     }
 }
