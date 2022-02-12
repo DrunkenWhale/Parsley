@@ -1,6 +1,6 @@
 package com.parsley
 
-import com.parsley.util.getEmptyInstance
+import com.parsley.util.getSampleInstance
 import sourcecode.Line
 
 import java.lang.reflect.Field
@@ -36,7 +36,7 @@ object Main {
 
     def test[T](xs: String)(implicit ClassTagT: ClassTag[T]): T = {
         val clazz = ClassTagT.runtimeClass
-        getEmptyInstance[T]
+        getSampleInstance[T]
 
     }
 }

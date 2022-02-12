@@ -1,27 +1,14 @@
 package com.parsley
 
-
-import com.parsley.dsl.{AutoIncrementAttribute, IndexAttribute, NullableAttribute, PrimaryKeyAttribute, UniqueAttribute}
-
 import java.lang.reflect.Constructor
 import scala.reflect.ClassTag
 
 package object util {
 
-    /**************** attribute value *******************/
-
-    val primaryKey = PrimaryKeyAttribute()
-    val index = IndexAttribute()
-    val autoIncrement = AutoIncrementAttribute()
-    val nullable = NullableAttribute()
-    val unique = UniqueAttribute()
-
-    /*************************************/
-
     // for the interest syntax "xxx.xxx is xxx"
     // I create this method
     // although I know this is not the best method
-    def getEmptyInstance[T](implicit clazz: ClassTag[T]): T = {
+    def getSampleInstance[T](implicit clazz: ClassTag[T]): T = {
         val construct = clazz.runtimeClass.getDeclaredConstructors.head
         val paramSeq = construct.getParameterTypes.map(x => injectUnmeaningfulParamWithType(x.getSimpleName)).toSeq
         getInstanceWithParamSeq(construct, paramSeq).asInstanceOf[T]
