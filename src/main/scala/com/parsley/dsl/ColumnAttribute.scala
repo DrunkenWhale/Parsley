@@ -1,6 +1,7 @@
 package com.parsley.dsl
 
-sealed trait ColumnAttribute {}
+sealed trait ColumnAttribute {
+}
 
 protected sealed case class PrimaryKeyAttribute() extends ColumnAttribute
 

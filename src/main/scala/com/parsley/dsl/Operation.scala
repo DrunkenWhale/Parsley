@@ -4,8 +4,9 @@ import sourcecode.Text
 import com.parsley.dsl.ColumnExpressionResult
 
 object Operation {
-    def declare(columns: Text[ColumnExpressionResult]*): Unit = {
-        val a = columns.map(x =>
+
+    def declare(columns: Text[ColumnExpressionResult]*): Seq[ColumnBody] = {
+        columns.map(x =>
             new ColumnBody(
                 columnName = x.source,
                 columnType = x.value.columnType,

@@ -1,6 +1,8 @@
 package com.parsley
 
-import sourcecode.Text
+import com.parsley.util.fakeInstance
+
+import scala.reflect.ClassTag
 
 package object dsl {
     /** ************** attribute value ****************** */
@@ -13,8 +15,8 @@ package object dsl {
 
     /** ********************************** */
 
-   
-    def on(): Unit = {
 
+    def on[T](operation:(T => Seq[ColumnBody]))(implicit clazzTag: ClassTag[T]): Unit = {
+        println(operation(fakeInstance[T]))
     }
 }

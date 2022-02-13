@@ -8,7 +8,7 @@ package object util {
     // for the interest syntax "xxx.xxx is xxx"
     // I create this method
     // although I know this is not the best method
-    def getSampleInstance[T](implicit clazz: ClassTag[T]): T = {
+    def fakeInstance[T](implicit clazz: ClassTag[T]): T = {
         val construct = clazz.runtimeClass.getDeclaredConstructors.head
         val paramSeq = construct.getParameterTypes.map(x => injectUnmeaningfulParamWithType(x.getSimpleName)).toSeq
         getInstanceWithParamSeq(construct, paramSeq).asInstanceOf[T]
