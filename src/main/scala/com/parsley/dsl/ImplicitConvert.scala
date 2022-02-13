@@ -5,5 +5,5 @@ import scala.language.implicitConversions
 
 object ImplicitConvert {
 
-    
+
 }

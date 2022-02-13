@@ -3,9 +3,9 @@ package com.parsley.connect
 
 import com.parsley.connect.connection.{DataBaseConnection, MysqlConnection}
 
-import java.sql.{Connection, DriverManager}
+import java.sql.{Connection, DriverManager, Statement}
 
-class DataBaseManager(databaseConnection: DataBaseConnection) {
+protected class DataBaseManager(databaseConnection: DataBaseConnection) {
 
     private val connection: Connection = connect()
 
@@ -20,17 +20,15 @@ class DataBaseManager(databaseConnection: DataBaseConnection) {
 
 object DataBaseManager {
 
-    private var dataBaseManager: DataBaseManager | Null = null
+    def register(databaseConnection: DataBaseConnection) = {
+        this.dataBaseManager = new DataBaseManager(databaseConnection)
+    }
+
+    private var dataBaseManager: DataBaseManager = null
 
     // singleton instance
     // not thread safe
-    def apply(databaseConnection: DataBaseConnection): DataBaseManager = {
-        if (dataBaseManager == null) {
-            this.dataBaseManager = new DataBaseManager(databaseConnection)
-            return dataBaseManager
-        } else {
-            return dataBaseManager
-        }
-    }
+    def statment(): Statement = this.dataBaseManager.connection.createStatement()
+
 
 }
