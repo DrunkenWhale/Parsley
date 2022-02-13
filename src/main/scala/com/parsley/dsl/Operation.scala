@@ -12,7 +12,6 @@ object Operation {
                 attributes = x.value.attributes,
             )
         )
-        println(a)
     }
 
 }
