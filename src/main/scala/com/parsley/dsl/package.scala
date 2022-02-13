@@ -1,7 +1,9 @@
 package com.parsley
 
+import sourcecode.Text
+
 package object dsl {
-    /**************** attribute value *******************/
+    /** ************** attribute value ****************** */
 
     val primaryKey = PrimaryKeyAttribute()
     val index = IndexAttribute()
@@ -9,13 +11,10 @@ package object dsl {
     val nullable = NullableAttribute()
     val unique = UniqueAttribute()
 
-    /*************************************/
+    /** ********************************** */
 
-    def is():Unit={
-
-    }
-
-    def on(): Unit ={
+   
+    def on(): Unit = {
 
     }
 }
