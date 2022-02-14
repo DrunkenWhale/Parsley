@@ -9,18 +9,18 @@ package object dsl {
     /** ************** attribute value ****************** */
 
     val primaryKey = PrimaryKeyAttribute()
-    val index = IndexAttribute()
+    val indexed = IndexAttribute()
     val autoIncrement = AutoIncrementAttribute()
-    val nullable = NullableAttribute()
+    val notnull = NotNullAttribute()
     val unique = UniqueAttribute()
 
     /** ********************************** */
 
-
     def on[T](table: Table[T])(operation: (T => Seq[ColumnBody]))(implicit clazzTag: ClassTag[T]): Unit = {
         operation(fakeInstance[T]).foreach(
             // if one column be declared again, attribute will be replaced with recent attribute
-            x => table.columnMap.put(x.columnName, (x.columnType, x.attributes))
+            // idea will report error here, but obviously,compile can succeed
+            x => Table.addNewColumnMessage(table)(x.columnName, (x.columnType, x.attributes))
         )
     }
 

@@ -1,6 +1,6 @@
 package com.parsley
 
-import com.parsley.dsl.{ColumnBody, ColumnExpression, Table, declare, index, nullable, on, primaryKey, table, unique}
+import com.parsley.dsl.{ColumnBody, ColumnExpression, Table, declare, indexed, notnull, on, primaryKey, table, unique}
 import com.parsley.util.fakeInstance
 import sourcecode.{Line, Text}
 import com.parsley.dsl.ImplicitConvert.*
@@ -17,13 +17,16 @@ class Schema {
 
 object Main {
     def main(args: Array[String]): Unit = {
+
+        
+
         val t = table[Schema]()
         on(t)(schema => declare(
-            schema.number is (primaryKey,nullable),
+            schema.number is (primaryKey,notnull),
             schema.name is unique,
-            schema.age is index
+            schema.age is indexed
         ))
-        t.create()
+        println(t.create())
 
     }
 }
