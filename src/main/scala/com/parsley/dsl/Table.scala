@@ -1,7 +1,10 @@
 package com.parsley.dsl
 
+import com.parsley.connect.DataBaseManager
 import com.parsley.connect.DataBaseManager.statment
 import com.parsley.dsl.ColumnAttribute.attributeMappingToSQL
+import com.parsley.dsl.Table.createSQLString
+
 import scala.collection.mutable
 import scala.reflect.ClassTag
 
@@ -11,16 +14,12 @@ protected class Table[T](val tableName: String) {
     // value: (ColumnType,ColumnAttributes)
     private val columnMap = mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]]()
 
-    def create(): String = {
+    private val indexedSeq = mutable.Seq[String]()
 
-        val columnString = columnMap.toList.map(x =>
-            x._1 + " " + x._2._1 + (for (attribute <- x._2._2) yield (" " + attributeMappingToSQL(attribute))).mkString + ",\n"
-        ).mkString
-
-        val sqlMiddleString: String =
-            s"CREATE TABLE IF NOT EXISTS $tableName (\n" +
-                s"$columnString"
-        sqlMiddleString.substring(0, sqlMiddleString.length - 2) + "\n)"
+    def create(): Unit = {
+        val str = createSQLString(this)
+        println(str)
+        DataBaseManager.statment().execute(str)
     }
 
     def query(): Unit = {
@@ -48,4 +47,16 @@ protected object Table {
         table.columnMap.put(key, value)
     }
 
+    def createSQLString(table: Table[_]): String = {
+        val columnString = table.columnMap.toList.map(x =>
+            "`" + x._1 + "` " + x._2._1 +
+                (
+                    for (attribute <- x._2._2)
+                    yield (" " + attributeMappingToSQL(attribute))).mkString + ",\n"
+        ).mkString
+        val sqlMiddleString: String =
+            s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
+                s"$columnString"
+        (sqlMiddleString.substring(0, sqlMiddleString.length - 2) + "\n)")
+    }
 }

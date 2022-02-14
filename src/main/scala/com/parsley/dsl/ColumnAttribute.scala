@@ -21,13 +21,15 @@ protected sealed case class NotNullAttribute()
 protected object ColumnAttribute {
 
     def attributeMappingToSQL(attribute: ColumnAttribute): String = {
+
         attribute match {
             case PrimaryKeyAttribute() => "PRIMARY KEY"
-            case IndexAttribute() => "INDEX"
+            case IndexAttribute() => "UNIQUE"    // need change
             case NotNullAttribute() => "NOT NULL"
             case UniqueAttribute() => "UNIQUE"
             case AutoIncrementAttribute() => "AUTO_INCREMENT"
         }
+
     }
 
 }
