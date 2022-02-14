@@ -16,6 +16,7 @@ package object dsl {
 
     /** ********************************** */
 
+
     def on[T](table: Table[T])(operation: (T => Seq[ColumnBody]))(implicit clazzTag: ClassTag[T]): Unit = {
         operation(fakeInstance[T]).foreach(
             // if one column be declared again, attribute will be replaced with recent attribute
