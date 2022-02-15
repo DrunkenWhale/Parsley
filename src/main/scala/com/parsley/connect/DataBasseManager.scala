@@ -30,5 +30,6 @@ object DataBaseManager {
     // not thread safe
     def statment(): Statement = this.dataBaseManager.connection.createStatement()
 
+    def preparedStatement(sql:String) = this.dataBaseManager.connection.prepareStatement(sql)
 
 }

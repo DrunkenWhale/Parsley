@@ -9,16 +9,18 @@ import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect.ClassTag
 
-protected class Table[T](val tableName: String) {
+protected class Table[T](val tableName: String)(private val classTag: ClassTag[T]) {
 
     // key: ColumnName
     // value: (ColumnType,ColumnAttributes)
     private val columnMap = mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]]()
 
+
+
     def create(): Unit = {
-        val str = createSQLString(this)
-        println(str)
-        DataBaseManager.statment().execute(str)
+        val sql = createSQLString(this)
+        println(sql)
+        DataBaseManager.statment().execute(sql)
     }
 
     def query(): Unit = {
@@ -26,8 +28,8 @@ protected class Table[T](val tableName: String) {
     }
 
     def insert(x: T): Unit = {
-        val sql: String = s" INSERT INTO  "
-        //        statment().execute()
+        val sql: String = s" INSERT INTO $tableName \n VALUES "
+        DataBaseManager.statment().execute("")
     }
 
     def update(): Unit = {
@@ -77,7 +79,7 @@ protected object Table {
         if (middleString.length == 0) {
             ""
         } else {
-            s"INDEX(${middleString.substring(0,middleString.length-1)})"
+            s"INDEX(${middleString.substring(0, middleString.length - 1)})"
         }
 
     }
