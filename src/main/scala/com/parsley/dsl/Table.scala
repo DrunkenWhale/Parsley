@@ -9,12 +9,13 @@ import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect.ClassTag
 
-protected class Table[T](val tableName: String)(private val classTag: ClassTag[T]) {
+protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) {
+
+    private val clazz = classTag.runtimeClass
 
     // key: ColumnName
     // value: (ColumnType,ColumnAttributes)
     private val columnMap = mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]]()
-
 
 
     def create(): Unit = {
@@ -28,7 +29,13 @@ protected class Table[T](val tableName: String)(private val classTag: ClassTag[T
     }
 
     def insert(x: T): Unit = {
-        val sql: String = s" INSERT INTO $tableName \n VALUES "
+        if (columnMap.isEmpty) {
+
+        } else {
+
+        }
+        val sql: String = s" INSERT INTO $tableName \n ()" +
+            s" VALUES ()"
         DataBaseManager.statment().execute("")
     }
 
