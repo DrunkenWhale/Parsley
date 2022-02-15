@@ -43,20 +43,31 @@ protected class Table[T](val tableName: String) {
 
 protected object Table {
 
+    // side effect method
     def addNewColumnMessage(table: Table[_])(key: String, value: Tuple2[String, Seq[ColumnAttribute]]): Unit = {
         table.columnMap.put(key, value)
     }
 
     def createSQLString(table: Table[_]): String = {
         val columnString = table.columnMap.toList.map(x =>
-            "`" + x._1 + "` " + x._2._1 +
-                (
-                    for (attribute <- x._2._2)
-                    yield (" " + attributeMappingToSQL(attribute))).mkString + ",\n"
+            val stringBuilder: mutable.StringBuilder = new StringBuilder()
+
+            for (attribute <- x._2._2) {
+                stringBuilder.append(attribute match {
+                    case IndexAttribute() =>
+                        table.indexedSeq.appended(x._1)
+                        " "
+                    case _ => " " + attributeMappingToSQL(attribute)
+                })
+            }
+            "`" + x._1 + "` " + x._2._1 + stringBuilder.result() + ",\n"
         ).mkString
-        val sqlMiddleString: String =
-            s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
-                s"$columnString"
-        (sqlMiddleString.substring(0, sqlMiddleString.length - 2) + "\n)")
+
+        val indexedString = "INDEX(" + table.indexedSeq.map(x=>x) + ")\n" +
+            ");"
+
+        s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
+            s"$columnString"
+
     }
 }

@@ -24,7 +24,7 @@ protected object ColumnAttribute {
 
         attribute match {
             case PrimaryKeyAttribute() => "PRIMARY KEY"
-            case IndexAttribute() => "UNIQUE"    // need change
+            case IndexAttribute() => "INDEX"    // program will never match this  
             case NotNullAttribute() => "NOT NULL"
             case UniqueAttribute() => "UNIQUE"
             case AutoIncrementAttribute() => "AUTO_INCREMENT"

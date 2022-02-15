@@ -10,25 +10,19 @@ import com.parsley.dsl.ImplicitConvert.*
 import java.lang.reflect.Field
 import scala.reflect.ClassTag
 import scala.language.postfixOps
-
-class Schema {
-    val name: String = "114"
-    val number: Int = 514
-    val age: Long = 114514
-}
-
+case class Student(name:String,age:Int,gender:Boolean)
 object Main {
     def main(args: Array[String]): Unit = {
 
         DataBaseManager.register(MysqlConnection(database = "parsely",password = "3777777"))
 
-        val t = table[Schema]()
-        on(t)(schema => declare(
-            schema.number is primaryKey,
-            schema.name is unique
+
+        val students = table[Student]
+        on(students)(student=>declare(
+            student.name is primaryKey,
+            student.age is (notnull,unique),
+            student.gender is indexed
         ))
-
-        t.create()
-
+        students.create()
     }
 }

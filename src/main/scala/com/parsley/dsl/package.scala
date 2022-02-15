@@ -36,7 +36,7 @@ package object dsl {
             )
         )
 
-    def table[T]()(implicit ClassTagT: ClassTag[T]): Table[T] = {
+    def table[T](implicit ClassTagT: ClassTag[T]): Table[T] = {
         new Table[T](ClassTagT.runtimeClass.getSimpleName)
     }
 
