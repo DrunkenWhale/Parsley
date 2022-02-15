@@ -6,7 +6,7 @@ import com.parsley.dsl.ColumnAttribute.attributeMappingToSQL
 import com.parsley.dsl.Table.createSQLString
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect.ClassTag
 
 protected class Table[T](val tableName: String) {
@@ -14,8 +14,6 @@ protected class Table[T](val tableName: String) {
     // key: ColumnName
     // value: (ColumnType,ColumnAttributes)
     private val columnMap = mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]]()
-
-    private val indexColumnList = mutable.ListBuffer[String]()
 
     def create(): Unit = {
         val str = createSQLString(this)
@@ -53,29 +51,34 @@ protected object Table {
 
     val createSQLString = (table: Table[_]) => {
         s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
-            s"${columnString(table)}" +
-            s"${indexString(table.indexColumnList)}" + "\n"
-            + ");"
+            s"${columnString(table)}" + ");"
 
     }
 
-    // side effect
-    // table's index list will be changed
-    // indexColumnList will refactor to immutable in future version
     val columnString: Table[_] => String = (table: Table[_]) => {
+        var indexColumnList = List[String]()
         table.columnMap.toList.map(x =>
             val stringBuilder: mutable.StringBuilder = new StringBuilder()
-                x._2._2.foreach(attribute =>
-                    stringBuilder.append(attribute match {
-                        case IndexAttribute() =>
-                            table.indexColumnList.append(x._1)
-                            " "
-                        case _ => " " + attributeMappingToSQL(attribute)
-                    })
-                 )
+                x
+            ._2._2.foreach(attribute =>
+            stringBuilder.append(attribute match {
+                case IndexAttribute() =>
+                    indexColumnList = indexColumnList.appended(x._1)
+                    " "
+                case _ => " " + attributeMappingToSQL(attribute)
+            })
+        )
             "`" + x._1 + "` " + x._2._1 + stringBuilder.result() + ",\n"
-        ).mkString
+        ).mkString + s"${indexString(indexColumnList)}" + "\n"
     }
 
-    val indexString = (indexColumnList: ListBuffer[String]) => s"INDEX(${indexColumnList.mkString})"
+    val indexString = (indexColumnList: List[String]) => {
+        val middleString = indexColumnList.map(x => x + ",").mkString
+        if (middleString.length == 0) {
+            ""
+        } else {
+            s"INDEX(${middleString.substring(0,middleString.length-1)})"
+        }
+
+    }
 }

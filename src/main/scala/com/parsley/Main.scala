@@ -20,7 +20,7 @@ object Main {
         val students = table[Student]
         on(students)(student=>declare(
             student.name is primaryKey,
-            student.age is (notnull,unique),
+            student.age is (notnull,unique,indexed),
             student.gender is indexed
         ))
         students.create()
