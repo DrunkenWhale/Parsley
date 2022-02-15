@@ -15,8 +15,9 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
 
     // key: ColumnName
     // value: (ColumnType,ColumnAttributes)
-    private val columnMap = mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]]()
-
+    private val columnMap: mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]] =
+    mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]](
+        (clazz.getDeclaredFields.map(x => (x.getName -> (x.getType.getSimpleName, Seq[ColumnAttribute]())))): _*)
 
     def create(): Unit = {
         val sql = createSQLString(this)
@@ -29,12 +30,10 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
     }
 
     def insert(x: T): Unit = {
-        if (columnMap.isEmpty) {
-
-        } else {
-
-        }
-        val sql: String = s" INSERT INTO $tableName \n ()" +
+        val temp = clazz.cast(x)
+        println(clazz.getDeclaredMethod("age").invoke(temp))
+        println(clazz.getDeclaredField("name").get(clazz.cast(x)))
+        val sql: String = s" INSERT INTO $tableName \n ${columnMap.map(x => x._1).toString().substring(11)}" +
             s" VALUES ()"
         DataBaseManager.statment().execute("")
     }

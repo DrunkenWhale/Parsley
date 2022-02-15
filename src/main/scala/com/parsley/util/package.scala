@@ -22,7 +22,8 @@ package object util {
         case "boolean" => true
         case "String" => ""
         case "char" => '0'
-        case x => throw Exception(s" type: $x not be implement ")
+        case x => null
+//        case x => throw Exception(s" type: $x not be implement ")
     }
 
     private def getInstanceWithParamSeq(constructor: Constructor[_], parameter: Seq[Any]) = {
