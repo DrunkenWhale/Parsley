@@ -4,7 +4,7 @@ import com.parsley.connect.DataBaseManager
 import com.parsley.connect.DataBaseManager.statment
 import com.parsley.dsl.ColumnAttribute.attributeMappingToSQL
 import com.parsley.dsl.Table.createSQLString
-
+import com.parsley.dsl.ColumnExpression.typeNameMappingToSQL
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect.ClassTag
@@ -17,7 +17,7 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
     // value: (ColumnType,ColumnAttributes)
     private val columnMap: mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]] =
     mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]](
-        (clazz.getDeclaredFields.map(x => (x.getName -> (x.getType.getSimpleName, Seq[ColumnAttribute]())))): _*)
+        (clazz.getDeclaredFields.map(x => (x.getName -> (typeNameMappingToSQL(x.getType.getSimpleName), Seq[ColumnAttribute]())))): _*)
 
     def create(): Unit = {
         val sql = createSQLString(this)
@@ -29,13 +29,34 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
 
     }
 
-    def insert(x: T): Unit = {
-        val temp = clazz.cast(x)
-        println(clazz.getDeclaredMethod("age").invoke(temp))
-        println(clazz.getDeclaredField("name").get(clazz.cast(x)))
-        val sql: String = s" INSERT INTO $tableName \n ${columnMap.map(x => x._1).toString().substring(11)}" +
-            s" VALUES ()"
-        DataBaseManager.statment().execute("")
+    def insert(obj: T): Unit = { // why i can't setAccessible ???
+        // the val I defined will be compiled to method with the same name
+        val objWithType = clazz.cast(obj)
+        val columnList = columnMap.map(x => x._1).toList
+        val middleSQLString: String =
+            s"INSERT INTO `$tableName`\n" +
+                s"${columnList.toString().substring(4)}\n" +
+                s"VALUES\n" +
+                s"(${"?," * columnList.size}"
+
+        val sql = middleSQLString.substring(0, middleSQLString.length - 1) + ");"
+        val statment = DataBaseManager.preparedStatement(sql)
+        columnList.zipWithIndex.foreach((x, index) =>
+            val columnMapElement = columnMap(x)
+            val i = index + 1;
+            columnMapElement._1 match {
+                case "INT" => statment.setInt(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Int])
+                case "BIGINT" => statment.setLong(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Long])
+                case "FLOAT" => statment.setFloat(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Float])
+                case "DOUBLE" => statment.setDouble(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Double])
+                case "BOOLEAN" => statment.setBoolean(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Boolean])
+                case "CHAR(255)" => statment.setString(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[String])
+                case "CHAR(1)" => statment.setByte(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Byte])
+                case x => throw Exception(s" type: $x not be implement")
+
+            })
+        println(sql)
+        statment.execute()
     }
 
     def update(): Unit = {

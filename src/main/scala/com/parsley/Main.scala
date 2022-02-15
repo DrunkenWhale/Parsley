@@ -11,7 +11,9 @@ import java.lang.reflect.Field
 import scala.reflect.ClassTag
 import scala.language.postfixOps
 
-case class Student(name: String, age: Int, gender: Boolean)
+class Studenta(val name: String, var age: Int, val gender: Boolean) {
+//    val exist: Boolean = true
+}
 
 object Main {
     def main(args: Array[String]): Unit = {
@@ -19,7 +21,13 @@ object Main {
         DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
 
 
-        val students = table[Student]
-        students.insert(new Student("114", 514, true))
+        val students = table[Studenta]
+        on(students)(student => declare(
+            student.age is primaryKey,
+            student.name is unique,
+            student.gender is indexed
+        ))
+        students.create()
+        students.insert(new Studenta("114514", 1919810, true))
     }
 }

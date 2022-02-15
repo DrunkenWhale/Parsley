@@ -26,7 +26,7 @@ private object ColumnExpression {
             case "long" => "BIGINT"
             case "float" => "FLOAT"
             case "double" => "DOUBLE"
-            case "boolean" => "INT"
+            case "boolean" => "BOOLEAN"
             case "String" => "CHAR(255)"
             case "char" => "CHAR(1)"
             case x => throw Exception(s" type: $x not be implement ")
