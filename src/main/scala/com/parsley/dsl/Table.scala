@@ -14,7 +14,7 @@ protected class Table[T](val tableName: String) {
     // value: (ColumnType,ColumnAttributes)
     private val columnMap = mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]]()
 
-    private val indexedSeq = mutable.Seq[String]()
+    private val indexedColumnList = mutable.ListBuffer[String]()
 
     def create(): Unit = {
         val str = createSQLString(this)
@@ -55,7 +55,7 @@ protected object Table {
             for (attribute <- x._2._2) {
                 stringBuilder.append(attribute match {
                     case IndexAttribute() =>
-                        table.indexedSeq.appended(x._1)
+                        table.indexedColumnList.append(x._1)
                         " "
                     case _ => " " + attributeMappingToSQL(attribute)
                 })
@@ -63,11 +63,12 @@ protected object Table {
             "`" + x._1 + "` " + x._2._1 + stringBuilder.result() + ",\n"
         ).mkString
 
-        val indexedString = "INDEX(" + table.indexedSeq.map(x=>x) + ")\n" +
-            ");"
+        val indexedString = "INDEX(" + table.indexedColumnList.mkString
 
         s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
-            s"$columnString"
+            s"$columnString" +
+            s"$indexedString" + ")\n"
+            + ");"
 
     }
 }
