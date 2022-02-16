@@ -22,7 +22,7 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
 
     def create(): Unit = {
         val sql = createSQLString(this)
-        loggingSQL(sql,"create")
+        loggingSQL(sql, "create")
         DataBaseManager.statment().execute(sql)
     }
 
@@ -56,7 +56,7 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
                 case x => throw Exception(s" type: $x not be implement")
 
             })
-        loggingSQL(sql,"insert")
+        loggingSQL(sql, "insert")
         statment.execute()
     }
 
@@ -79,15 +79,17 @@ protected object Table {
     }
 
 
+    /** ****************************** create ****************************************************** */
+
     val createSQLString = (table: Table[_]) => {
         s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
             s"${columnString(table)}" + ");"
 
     }
 
-    val columnString: Table[_] => String = (table: Table[_]) => {
+    val columnString = (table: Table[_]) => {
         var indexColumnList = List[String]()
-        table.columnMap.toList.map(x =>
+        val middleSQLString = table.columnMap.toList.map(x =>
             val stringBuilder: mutable.StringBuilder = new StringBuilder()
                 x
             ._2._2.foreach(attribute =>
@@ -99,23 +101,35 @@ protected object Table {
             })
         )
             "`" + x._1 + "` " + x._2._1 + stringBuilder.result() + ",\n"
-        ).mkString + s"${indexString(indexColumnList)}" + "\n"
+        ).mkString
+
+        if (indexColumnList.isEmpty) {
+            middleSQLString.substring(0,middleSQLString.length-2) +"\n"
+        } else {
+            middleSQLString + s"${indexString(indexColumnList)}" + "\n"
+        }
+
     }
 
     val indexString = (indexColumnList: List[String]) => {
         val middleString = indexColumnList.map(x => x + ",").mkString
         if (middleString.length == 0) {
-            ""
+            "INDEX()"
         } else {
             s"INDEX(${middleString.substring(0, middleString.length - 1)})"
         }
 
     }
 
+    /** ********************************insert****************************************************** */
+
+
     private def loggingSQL(SQLString: String, SQLMethod: String): Unit = {
         // temp log
         println(s"\n----------------------------$SQLMethod------------------------------------\n")
+
         println(SQLString)
+
         println("\n----------------------------------------------------------------------\n\n")
     }
 
