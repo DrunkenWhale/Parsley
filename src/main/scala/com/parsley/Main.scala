@@ -22,13 +22,14 @@ object Main {
 
 
         val students = table[mk]
-        on(students)(student => declare(
-            student.age is primaryKey,
-            student.name is unique,
-            student.gender is indexed,
-            student.name is indexed
-        ))
-        students.create()
-        students.insert(new mk("114514", 1919810, true))
+        students.query()
+//        on(students)(student => declare(
+//            student.age is primaryKey,
+//            student.name is unique,
+//            student.gender is indexed,
+//            student.name is indexed
+//        ))
+//        students.create()
+//        students.insert(new mk("114514", 1919810, true))
     }
 }
