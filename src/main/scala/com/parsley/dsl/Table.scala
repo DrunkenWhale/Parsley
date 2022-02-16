@@ -3,9 +3,10 @@ package com.parsley.dsl
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.DataBaseManager.statment
 import com.parsley.dsl.ColumnAttribute.attributeMappingToSQL
-import com.parsley.dsl.Table.{createSQLString, loggingSQL}
+import com.parsley.dsl.Table.{createSQLString, insertSQLString, loggingSQL, setInsertPreparedmentValue}
 import com.parsley.dsl.ColumnExpression.typeNameMappingToSQL
 
+import java.sql.PreparedStatement
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect.ClassTag
@@ -21,9 +22,9 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
         (clazz.getDeclaredFields.map(x => (x.getName -> (typeNameMappingToSQL(x.getType.getSimpleName), Seq[ColumnAttribute]())))): _*)
 
     def create(): Unit = {
-        val sql = createSQLString(this)
-        loggingSQL(sql, "create")
-        DataBaseManager.statment().execute(sql)
+        val sqlString = createSQLString(this)
+        loggingSQL(sqlString, "create")
+        DataBaseManager.statment().execute(sqlString)
     }
 
     def query(): Unit = {
@@ -32,32 +33,11 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
 
     def insert(obj: T): Unit = { // why i can't setAccessible ???
         // the val I defined will be compiled to method with the same name
-        val objWithType = clazz.cast(obj)
-        val columnList = columnMap.map(x => x._1).toList
-        val middleSQLString: String =
-            s"INSERT INTO `$tableName`\n" +
-                s"${columnList.toString().substring(4)}\n" +
-                s"VALUES\n" +
-                s"(${"?," * columnList.size}"
-
-        val sql = middleSQLString.substring(0, middleSQLString.length - 1) + ");"
-        val statment = DataBaseManager.preparedStatement(sql)
-        columnList.zipWithIndex.foreach((x, index) =>
-            val columnMapElement = columnMap(x)
-            val i = index + 1;
-            columnMapElement._1 match {
-                case "INT" => statment.setInt(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Int])
-                case "BIGINT" => statment.setLong(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Long])
-                case "FLOAT" => statment.setFloat(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Float])
-                case "DOUBLE" => statment.setDouble(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Double])
-                case "BOOLEAN" => statment.setBoolean(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Boolean])
-                case "CHAR(255)" => statment.setString(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[String])
-                case "CHAR(1)" => statment.setByte(i, clazz.getDeclaredMethod(x).invoke(objWithType).asInstanceOf[Byte])
-                case x => throw Exception(s" type: $x not be implement")
-
-            })
-        loggingSQL(sql, "insert")
-        statment.execute()
+        val sqlStringTemplate = insertSQLString(tableName, columnMap, clazz)
+        loggingSQL(sqlStringTemplate, "insert")
+        val preparedStatement = DataBaseManager.preparedStatement(sqlStringTemplate)
+        setInsertPreparedmentValue(sqlStringTemplate)(obj, columnMap, clazz)
+        preparedStatement.execute()
     }
 
     def update(): Unit = {
@@ -79,15 +59,14 @@ protected object Table {
     }
 
 
-    /** ****************************** create ****************************************************** */
+    //--------------------------------- create --------------------------------------------------------/
 
-    val createSQLString = (table: Table[_]) => {
+    def createSQLString(table: Table[_]) = {
         s"CREATE TABLE IF NOT EXISTS `${table.tableName}`(\n" +
             s"${columnString(table)}" + ");"
-
     }
 
-    val columnString = (table: Table[_]) => {
+    private def columnString(table: Table[_]) = {
         var indexColumnList = List[String]()
         val middleSQLString = table.columnMap.toList.map(x =>
             val stringBuilder: mutable.StringBuilder = new StringBuilder()
@@ -104,14 +83,14 @@ protected object Table {
         ).mkString
 
         if (indexColumnList.isEmpty) {
-            middleSQLString.substring(0,middleSQLString.length-2) +"\n"
+            middleSQLString.substring(0, middleSQLString.length - 2) + "\n"
         } else {
             middleSQLString + s"${indexString(indexColumnList)}" + "\n"
         }
 
     }
 
-    val indexString = (indexColumnList: List[String]) => {
+    private def indexString(indexColumnList: List[String]) = {
         val middleString = indexColumnList.map(x => x + ",").mkString
         if (middleString.length == 0) {
             "INDEX()"
@@ -121,7 +100,42 @@ protected object Table {
 
     }
 
-    /** ********************************insert****************************************************** */
+    //---------------------------------- insert --------------------------------------------------------/
+
+    def insertSQLString(tableName: String, columnMap: mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]], clazz: Class[_]) = {
+
+        val columnList = columnMap.map(x => x._1).toList
+
+        val middleSQLString: String =
+            s"INSERT INTO `$tableName`\n" +
+                s"${columnList.toString().substring(4)}\n" +
+                s"VALUES\n" +
+                s"(${"?," * columnList.size}"
+
+        middleSQLString.substring(0, middleSQLString.length - 1) + ");"
+    }
+
+    private def setInsertPreparedmentValue(sqlString: String)
+                                          (obj: Any, columnMap: mutable.HashMap[String, Tuple2[String, Seq[ColumnAttribute]]], clazz: Class[_])
+    : Unit = {
+
+        val statment = DataBaseManager.preparedStatement(sqlString)
+
+        columnMap.map(x => x._1).zipWithIndex.foreach((x, index) =>
+            val columnMapElement = columnMap(x)
+            val i = index + 1;
+
+            columnMapElement._1 match {
+                case "INT" => statment.setInt(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[Int])
+                case "BIGINT" => statment.setLong(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[Long])
+                case "FLOAT" => statment.setFloat(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[Float])
+                case "DOUBLE" => statment.setDouble(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[Double])
+                case "BOOLEAN" => statment.setBoolean(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[Boolean])
+                case "CHAR(255)" => statment.setString(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[String])
+                case "CHAR(1)" => statment.setByte(i, clazz.getDeclaredMethod(x).invoke(obj).asInstanceOf[Byte])
+                case x => throw Exception(s" type: $x not be implement")
+            })
+    }
 
 
     private def loggingSQL(SQLString: String, SQLMethod: String): Unit = {
