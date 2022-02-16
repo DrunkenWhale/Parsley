@@ -3,8 +3,9 @@ package com.parsley.dsl
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.DataBaseManager.statment
 import com.parsley.dsl.ColumnAttribute.attributeMappingToSQL
-import com.parsley.dsl.Table.createSQLString
+import com.parsley.dsl.Table.{createSQLString, loggingSQL}
 import com.parsley.dsl.ColumnExpression.typeNameMappingToSQL
+
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.reflect.ClassTag
@@ -21,7 +22,7 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
 
     def create(): Unit = {
         val sql = createSQLString(this)
-        println(sql)
+        loggingSQL(sql,"create")
         DataBaseManager.statment().execute(sql)
     }
 
@@ -55,7 +56,7 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
                 case x => throw Exception(s" type: $x not be implement")
 
             })
-        println(sql)
+        loggingSQL(sql,"insert")
         statment.execute()
     }
 
@@ -110,4 +111,12 @@ protected object Table {
         }
 
     }
+
+    private def loggingSQL(SQLString: String, SQLMethod: String): Unit = {
+        // temp log
+        println(s"\n----------------------------$SQLMethod------------------------------------\n")
+        println(SQLString)
+        println("\n----------------------------------------------------------------------\n\n")
+    }
+
 }
