@@ -11,7 +11,7 @@ import java.lang.reflect.Field
 import scala.reflect.ClassTag
 import scala.language.postfixOps
 
-class mk(val name: String, var age: Int, val gender: Boolean) {
+case class mk(val name: String, val gender: Boolean, var age: Int) {
 //    val exist: Boolean = true
 }
 
@@ -30,6 +30,6 @@ object Main {
 //            student.name is indexed
 //        ))
 //        students.create()
-//        students.insert(new mk("114514", 1919810, true))
+//        students.insert(new mk("11j45114", 1554919810, true))
     }
 }

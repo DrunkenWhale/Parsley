@@ -4,6 +4,7 @@ import com.parsley.connect.DataBaseManager
 import com.parsley.dsl.ColumnAttribute.attributeMappingToSQL
 import com.parsley.dsl.Table.{createSQLString, insertSQLString, loggingSQL, setInsertPreparedmentValue}
 import com.parsley.dsl.ColumnExpression.typeNameMappingToSQL
+import com.parsley.util.realInstance
 
 import java.sql.PreparedStatement
 import scala.collection.mutable
@@ -49,8 +50,10 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
             }).toSeq
             )
         }
-        println(resultValueList)
+
+        val t = resultValueList.map(x=>realInstance[T](x)).toList
 //        println(res)
+        println(t)
     }
 
     def insert(obj: T): Unit = { // why i can't setAccessible ???
