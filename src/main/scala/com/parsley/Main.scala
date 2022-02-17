@@ -11,7 +11,12 @@ import java.lang.reflect.Field
 import scala.reflect.ClassTag
 import scala.language.postfixOps
 
+<<<<<<< HEAD
 class Student(val name: String, val gender: Boolean, var age: Int) {
+=======
+class People(val name: String, val gender: Boolean, var age: Int) {
+    val exist: Boolean = true
+>>>>>>> v2
 }
 
 object Main {
@@ -20,6 +25,7 @@ object Main {
         DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
 
 
+<<<<<<< HEAD
         val students = table[Student]
         students.query()
         on(students)(student => declare(
@@ -28,7 +34,19 @@ object Main {
             student.gender is indexed,
             student.name is indexed
         ))
+=======
+        val students = table[People]
+        students.create()
+//        students.query().foreach(println)
+//        on(students)(student => declare(
+//            student.age is primaryKey,
+//            student.name is unique,
+//            student.gender is indexed,
+//            student.name is indexed
+//        ))
+>>>>>>> v2
 //        students.create()
-//        students.insert(new mk("11j45114", 1554919810, true))
+        students.insert(new People("1145114", true, 1919810))
+        students.query()
     }
 }
