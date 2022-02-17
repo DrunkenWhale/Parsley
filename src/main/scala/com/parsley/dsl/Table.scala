@@ -27,7 +27,7 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
         DataBaseManager.statment().execute(sqlString)
     }
 
-    def query(): Unit = {
+    def query(): Seq[T] = {
         val queryColumnMiddleString = this.columnMap.map(x => x._1).toString().substring(12)
         val queryColumnString = queryColumnMiddleString.substring(0, queryColumnMiddleString.length - 1)
         println(queryColumnString)
@@ -36,24 +36,24 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
         while (result.next()) {
             resultValueList.append(
                 columnMap.map(x => x._2._1).zipWithIndex.map((x, index) => {
-                val i = index + 1
-                x match {
-                    case "INT" => result.getInt(i)
-                    case "BIGINT" => result.getLong(i)
-                    case "FLOAT" => result.getFloat(i)
-                    case "DOUBLE" => result.getDouble(i)
-                    case "BOOLEAN" => result.getBoolean(i)
-                    case "CHAR(255)" => result.getString(i)
-                    case "CHAR(1)" => result.getByte(i).toChar
-                    case x => throw Exception(s" type: $x not be implement")
-                }
-            }).toSeq
+                    val i = index + 1
+                    x match {
+                        case "INT" => result.getInt(i)
+                        case "BIGINT" => result.getLong(i)
+                        case "FLOAT" => result.getFloat(i)
+                        case "DOUBLE" => result.getDouble(i)
+                        case "BOOLEAN" => result.getBoolean(i)
+                        case "CHAR(255)" => result.getString(i)
+                        case "CHAR(1)" => result.getByte(i).toChar
+                        case x => throw Exception(s" type: $x not be implement")
+                    }
+                }).toSeq
             )
         }
-
-        val t = resultValueList.map(x=>realInstance[T](x)).toList
-//        println(res)
-        println(t)
+        // param number is right
+        // but how can get right construct ?
+        clazz.getDeclaredFields.foreach(println)
+        resultValueList.map(x => realInstance[T](x)).toSeq
     }
 
     def insert(obj: T): Unit = { // why i can't setAccessible ???
