@@ -50,16 +50,13 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
                 }).toSeq
             )
         }
-<<<<<<< HEAD
         val t = resultValueList.map(x=>realInstance[T](x)).toList
 //        println(res)
         println(t)
-=======
         // param number is right
         // but how can get right construct ?
         clazz.getDeclaredFields.foreach(println)
         resultValueList.map(x => realInstance[T](x)).toSeq
->>>>>>> v2
     }
 
     def insert(obj: T): Unit = { // why i can't setAccessible ???
