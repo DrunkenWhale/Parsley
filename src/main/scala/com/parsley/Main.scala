@@ -39,7 +39,7 @@ object Main {
 //            student.name is indexed
 //        ))
 //        students.create()
-        students.insert(new People("1145114", true, 1919810))
+//        students.insert(People("1145114", true, 1919810))
         students.query()
     }
 }
