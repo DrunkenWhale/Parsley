@@ -30,7 +30,6 @@ object Main {
             student.gender is indexed,
             student.name is indexed
         ))
-        val students = table[People]
         students.create()
 //        students.query().foreach(println)
 //        on(students)(student => declare(
