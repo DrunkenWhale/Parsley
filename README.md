@@ -2,8 +2,6 @@ Delicate Orm，All basic function are .... not be implemented
 
 # Parsley
 
-# Parsley
-
 Delicate Orm，All basic function are .... not be implemented
 
 ## init
