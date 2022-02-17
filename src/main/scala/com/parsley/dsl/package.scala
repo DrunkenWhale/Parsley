@@ -40,5 +40,4 @@ package object dsl {
         new Table[T](ClassTagT.runtimeClass.getSimpleName)(ClassTagT)
     }
 
-
 }

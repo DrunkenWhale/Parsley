@@ -50,7 +50,6 @@ protected class Table[T](val tableName: String)(implicit classTag: ClassTag[T]) 
             }).toSeq
             )
         }
-
         val t = resultValueList.map(x=>realInstance[T](x)).toList
 //        println(res)
         println(t)
