@@ -1,14 +1,11 @@
-<<<<<<< HEAD
 Delicate Orm，All basic function are .... not be implemented
 
 # Parsley
 
-=======
 # Parsley
 
 Delicate Orm，All basic function are .... not be implemented
 
->>>>>>> v2
 ## init
 
 you must create connection before use `ORM`
