@@ -4,16 +4,7 @@ import com.parsley.dsl.ColumnBody.scalaTypeMappingToSQL
 
 import scala.reflect.ClassTag
 
-protected class ColumnBody(val columnName: String, val columnType: String, val attributes: Seq[ColumnAttribute]) {
-    
-    def is(): Unit = {
-        println("succeed" + columnName)
-    }
-
-    override def toString: String = {
-        s"name: $columnName ,type:$columnType, attriubte: $attributes"
-    }
-
+protected case class ColumnBody(val columnName: String, val columnType: String, val attributes: Seq[ColumnAttribute]) {
 }
 
 private object ColumnBody {

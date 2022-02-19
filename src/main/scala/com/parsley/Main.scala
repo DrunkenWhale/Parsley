@@ -31,15 +31,6 @@ object Main {
             student.name is indexed
         ))
         students.create()
-//        students.query().foreach(println)
-//        on(students)(student => declare(
-//            student.age is primaryKey,
-//            student.name is unique,
-//            student.gender is indexed,
-//            student.name is indexed
-//        ))
-//        students.create()
-//        students.insert(People("1145114", true, 1919810))
         students.query()
     }
 }
