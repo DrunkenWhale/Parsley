@@ -14,9 +14,9 @@ package object util {
         getInstanceWithParamSeq(construct, paramSeq).asInstanceOf[T]
     }
 
-    def realInstance[T](paramSeq:Seq[Any])(implicit clazz: ClassTag[T]): T = {
+    def realInstance[T](paramSeq: Seq[Any])(implicit clazz: ClassTag[T]): T = {
         val construct = clazz.runtimeClass.getDeclaredConstructors.head
-        getInstanceWithParamSeq(construct,paramSeq).asInstanceOf[T]
+        getInstanceWithParamSeq(construct, paramSeq).asInstanceOf[T]
     }
 
     private def injectUnmeaningfulParamWithType(typeName: String) = typeName match {
@@ -27,8 +27,7 @@ package object util {
         case "boolean" => true
         case "String" => ""
         case "char" => '0'
-        case x => null
-        //        case x => throw Exception(s" type: $x not be implement ")
+        case x => throw Exception(s" type: $x not be implement ")
     }
 
     private def getInstanceWithParamSeq(constructor: Constructor[_], parameter: Seq[Any]) = {
