@@ -1,6 +1,6 @@
 name := "Parsley"
 
-version := "0.1"
+version := "0.3"
 
 scalaVersion := "3.1.1"
 // https://mvnrepository.com/artifact/mysql/mysql-connector-java
