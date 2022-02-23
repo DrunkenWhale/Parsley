@@ -2,6 +2,9 @@ package com.parsley.macroImpl
 
 import scala.quoted.*
 
+/**
+ *
+ * */
 inline def instanceBySeq[T](inline seq: Seq[Any]): T = $ {
     instanceBySeqImpl[T]('seq)
 }
