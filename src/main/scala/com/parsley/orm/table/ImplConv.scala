@@ -1,4 +1,4 @@
-package com.parsley.orm.column
+package com.parsley.orm.table
 
 
 

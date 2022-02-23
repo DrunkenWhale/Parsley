@@ -1,6 +1,6 @@
-package com.parsley.orm.column
+package com.parsley.orm.table
 
-import com.parsley.orm.column.Attribute
+import com.parsley.orm.table.Attribute
 
 import scala.reflect.ClassTag
 
