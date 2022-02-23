@@ -1,5 +1,9 @@
 package com.parsley.orm
 
-package object dsl {
+import com.parsley.orm.column.Attribute
 
+package object dsl {
+    def declare(): Unit = {
+        
+    }
 }

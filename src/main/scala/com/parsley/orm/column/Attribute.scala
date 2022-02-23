@@ -1,6 +1,7 @@
-package com.parsley.orm
+package com.parsley.orm.column
 
 enum Attribute(protected val code: Int) {
+    
     case PrimaryKey extends Attribute(0)
     case Indexed extends Attribute(1)
     case Unique extends Attribute(2)
