@@ -11,18 +11,18 @@ object DSL {
 
     /* ---------------create------------- */
 
-    def on[T](table: Table[T])(columnExpressions: ColumnExpression*): Unit = {
+    def on[T](table: Table[T])(): Unit = {
 
     }
 
-    def declare(): Unit = {
-
+    def declare[T](columnExpressions: ColumnExpression*): Seq[ColumnExpression] = {
+        Seq()
     }
 
 
     extension (self: ColumnMeta) {
         def ==>(attributes: Attribute*): Unit = {
-            ColumnExpression(self.name,"",attributes)
+            ColumnExpression(self.name,"Nil",attributes)
         }
     }
 }

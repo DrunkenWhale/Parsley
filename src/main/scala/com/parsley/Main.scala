@@ -3,7 +3,7 @@ package com.parsley
 import com.parsley.macroImpl.primaryConstructorParamList
 import com.parsley.macroImpl.instanceBySeq
 import com.parsley.orm.Attribute
-
+import com.parsley.orm.DSL.*
 import java.sql.{Date, Time, Timestamp}
 
 case class A(name:String)
@@ -24,4 +24,11 @@ case class A(name:String)
 @main def test3(): Unit ={
     case class ACM(a:Int,B:Double,c:Long,D:Float,E:String,k:Boolean,f:Date,m:Time,ml:Timestamp)
     println(primaryConstructorParamList[ACM])
+}
+
+@main def test4(): Unit ={
+    case class Person(name:String,age:Int)
+    val persons = table[Person]()
+    println(primaryConstructorParamList[Person])
+    persons.create()
 }

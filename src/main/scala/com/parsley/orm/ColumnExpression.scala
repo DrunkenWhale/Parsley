@@ -1,21 +1,23 @@
 package com.parsley.orm
 
 private class ColumnExpression(val name: String, val tpe: String, val attribute: Seq[Attribute]) {
+
     def generateSQLSentence(): String = {
-        s"$name $tpe ${attribute.filterNot(x => x == Attribute.Indexed).mkString}"
+        s"$name $tpe ${attribute.filterNot(x => x == Attribute.Indexed).mkString(" ")}"
     }
 
     def isIndexColumn(): Boolean = {
         attribute.contains(Attribute.Indexed)
     }
+    
 }
 
-object ColumnExpression {
+protected object ColumnExpression {
 
     def apply(name: String, tpe: String, attributes: Seq[Attribute]): ColumnExpression =
         new ColumnExpression(name, tpe, attributes)
 
-    private def attributeMappingToSQL(attribute: Attribute): String = {
+    def attributeMappingToSQL(attribute: Attribute): String = {
         attribute match {
             case Attribute.PrimaryKey => "PRIMARY KEY"
             case Attribute.Unique => "UNIQUE"
@@ -40,7 +42,7 @@ object ColumnExpression {
      *         java.sql.Time           =>   TIME
      *         java.sql.Timestamp      =>   TIMESTAMP
      * */
-    private def typeMappingToSQL(tpe: String): String = {
+    def typeMappingToSQL(tpe: String): String = {
         tpe match {
             case "scala.Int" => "INT"
             case "scala.Double" => "DOUBLE"
