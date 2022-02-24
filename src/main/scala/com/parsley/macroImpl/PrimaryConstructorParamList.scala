@@ -13,15 +13,11 @@ private def primaryConstructorParamListImpl[T](using quotes: Quotes, typed: Type
         Expr(List[(String, String)]())
         // macro will throw exception when use generic type
         // use this method to avoid compile error
-        // emm, just like rust(yikes , don't hit me!)
+        // emm,may be it's about safety? just like rust(yikes , don't hit me!)
     } else {
         Expr(constructorList.head.map(x => x.tree match {
             case ValDef(name, tp, _) => (name, tp.tpe.show)
             case x => throw new Exception(s"Illegal Constructor => $x")
         }))
     }
-    //    Expr(TypeTree.of[T].symbol.primaryConstructor.paramSymss.head.map(x => x.tree match {
-    //        case ValDef(name, tp, _) => (name, tp.tpe.show)
-    //        case x => throw new Exception(s"Illegal Constructor => $x")
-    //    }))
 }

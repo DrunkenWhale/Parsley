@@ -4,6 +4,8 @@ import com.parsley.macroImpl.primaryConstructorParamList
 import com.parsley.macroImpl.instanceBySeq
 import com.parsley.orm.Attribute
 
+import java.sql.{Date, Time, Timestamp}
+
 case class A(name:String)
 
 @main def main(): Unit ={
@@ -19,3 +21,7 @@ case class A(name:String)
     println(index==Attribute.Indexed)
 }
 
+@main def test3(): Unit ={
+    case class ACM(a:Int,B:Double,c:Long,D:Float,E:String,k:Boolean,f:Date,m:Time,ml:Timestamp)
+    println(primaryConstructorParamList[ACM])
+}

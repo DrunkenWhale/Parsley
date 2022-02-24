@@ -25,9 +25,33 @@ object ColumnExpression {
         }
     }
 
+    /**
+     * mapping scala type to sql tpye
+     *
+     * @param: tpe => support these scala type and they will be mapping like this:
+     *
+     *         scala.Int               =>   INT
+     *         scala.Double            =>   DOUBLE
+     *         scala.Long              =>   BIGINT
+     *         scala.Float             =>   FLOAT
+     *         scala.Predef.String     =>   CHAR(128)
+     *         scala.Boolean           =>   BOOLEAN
+     *         java.sql.Date           =>   DATE
+     *         java.sql.Time           =>   TIME
+     *         java.sql.Timestamp      =>   TIMESTAMP
+     * */
     private def typeMappingToSQL(tpe: String): String = {
         tpe match {
-            case _=>""
+            case "scala.Int" => "INT"
+            case "scala.Double" => "DOUBLE"
+            case "scala.Long" => "BIGINT"
+            case "scala.Float" => "FLOAT"
+            case "scala.Predef.String" => "CHAR(128)"
+            case "scala.Boolean" => "BOOLEAN"
+            case "java.sql.Date" => "DATE"
+            case "java.sql.Time" => "TIME"
+            case "java.sql.Timestamp" => "TIMESTAMP"
+            case x => throw Exception(s"$x")
         }
     }
 

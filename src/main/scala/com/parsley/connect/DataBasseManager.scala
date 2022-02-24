@@ -23,13 +23,12 @@ object DataBaseManager {
     def register(databaseConnection: DataBaseConnection) = {
         this.dataBaseManager = new DataBaseManager(databaseConnection)
     }
-
-    private var dataBaseManager: DataBaseManager = null
-
+    
     // singleton instance
     // not thread safe
-    def statment(): Statement = this.dataBaseManager.connection.createStatement()
+    private var dataBaseManager: DataBaseManager = null
 
+    
     def preparedStatement(sql:String) = this.dataBaseManager.connection.prepareStatement(sql)
 
 }
