@@ -23,11 +23,12 @@ case class A(name:String)
 
 @main def test3(): Unit ={
     case class ACM(a:Int,B:Double,c:Long,D:Float,E:String,k:Boolean,f:Date,m:Time,ml:Timestamp)
-    println(primaryConstructorParamList[ACM])
 }
 
 @main def test4(): Unit ={
-    def create[T](): Unit ={
+    inline def create[T](): Unit ={
         println(primaryConstructorParamList[T])
     }
+    case class Person(name:String,age:Int)
+    create[Person]()
 }
