@@ -4,11 +4,15 @@ import scala.reflect.ClassTag
 import com.parsley.macroImpl.primaryConstructorParamList
 
 import scala.collection.mutable
+import scala.quoted.{Expr, Quotes, Type}
+
 
 private sealed class Table[T](val name: String)(implicit clazzTag: ClassTag[T]) {
 
     // mapping :   name => type(scala type(as String))
-    private val columnTypeMap: Map[String, String] = primaryConstructorParamList[T].toMap
+//    private val columnTypeMap: Map[String, String] = primaryConstructorParamList[T].toMap
+    private inline def columnTypeMap: Map[String, String] = primaryConstructorParamList[T].toMap
+//    private val columnTypeMap: Map[String, String] = List().toMap
 
     // when lack declare method on table,`columnExpressionMap.attributes` will be init as empty Seq
     private val columnExpressionMap: mutable.HashMap[String, ColumnExpression] =
@@ -20,7 +24,6 @@ private sealed class Table[T](val name: String)(implicit clazzTag: ClassTag[T]) 
 
     def create(): Unit = {
         println("-----------------------------")
-        println(primaryConstructorParamList[T])
         println(name)
         println(this.columnTypeMap)
         println(this.columnExpressionMap)
@@ -43,7 +46,6 @@ private sealed class Table[T](val name: String)(implicit clazzTag: ClassTag[T]) 
 
     }
 
-
 }
 
 object Table {
@@ -54,10 +56,10 @@ object Table {
      *
      * @param: clazzTag => get generic type
      * */
-    def apply[T]()(implicit clazzTag: ClassTag[T]): Table[T] =
+    inline def apply[T]()(implicit clazzTag: ClassTag[T]): Table[T] =
         new Table[T](name = clazzTag.runtimeClass.getSimpleName)
 
-    def apply[T](name: String)(implicit clazzTag: ClassTag[T]): Table[T] =
+    inline def apply[T](name: String)(implicit clazzTag: ClassTag[T]): Table[T] =
         new Table[T](name = name)
 
     // side effect!
