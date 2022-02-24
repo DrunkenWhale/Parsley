@@ -2,12 +2,26 @@ package com.parsley.macroImpl
 
 import scala.quoted.*
 
-inline def primaryConstructorParamList[T]: List[Tuple2[String, String]] = ${primaryConstructorParamListImpl[T]}
+inline def primaryConstructorParamList[T]: List[(String, String)] = $ {
+    primaryConstructorParamListImpl[T]
+}
 
-private def primaryConstructorParamListImpl[T](using quotes: Quotes, typed: Type[T]): Expr[List[Tuple2[String, String]]] = {
+private def primaryConstructorParamListImpl[T](using quotes: Quotes, typed: Type[T]): Expr[List[(String, String)]] = {
     import quotes.reflect.*
-    Expr(TypeTree.of[T].symbol.primaryConstructor.paramSymss.head.map(x => x.tree match {
-        case ValDef(name, tp, _) => (name, tp.tpe.show)
-        case x => throw new Exception(s"Illegal Constructor => $x")
-    }))
+    val constructorList = TypeTree.of[T].symbol.primaryConstructor.paramSymss
+    if (constructorList.isEmpty) {
+        Expr(List[(String, String)]())
+        // macro will throw exception when use generic type
+        // use this method to avoid compile error
+        // emm, just like rust(yikes , don't hit me!)
+    } else {
+        Expr(constructorList.head.map(x => x.tree match {
+            case ValDef(name, tp, _) => (name, tp.tpe.show)
+            case x => throw new Exception(s"Illegal Constructor => $x")
+        }))
+    }
+    //    Expr(TypeTree.of[T].symbol.primaryConstructor.paramSymss.head.map(x => x.tree match {
+    //        case ValDef(name, tp, _) => (name, tp.tpe.show)
+    //        case x => throw new Exception(s"Illegal Constructor => $x")
+    //    }))
 }
