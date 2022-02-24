@@ -3,7 +3,7 @@ package com.parsley.macroImpl
 import scala.quoted.*
 import scala.reflect.ClassTag
 
-inline def primaryConstructorParamList[T](implicit classTag: ClassTag[T]): List[(String, String)] = $ {
+inline def primaryConstructorParamList[T]: List[(String, String)] = $ {
     primaryConstructorParamListImpl[T]
 }
 

@@ -11,8 +11,7 @@ private sealed class Table[T](val name: String)(implicit clazzTag: ClassTag[T]) 
 
     // mapping :   name => type(scala type(as String))
 //    private val columnTypeMap: Map[String, String] = primaryConstructorParamList[T].toMap
-    private inline def columnTypeMap: Map[String, String] = primaryConstructorParamList[T].toMap
-//    private val columnTypeMap: Map[String, String] = List().toMap
+    private val columnTypeMap: Map[String, String] = List().toMap
 
     // when lack declare method on table,`columnExpressionMap.attributes` will be init as empty Seq
     private val columnExpressionMap: mutable.HashMap[String, ColumnExpression] =

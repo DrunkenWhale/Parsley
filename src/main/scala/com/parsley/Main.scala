@@ -27,8 +27,7 @@ case class A(name:String)
 }
 
 @main def test4(): Unit ={
-    case class Person(name:String)
-    val persons = table[Person]()
-    println(primaryConstructorParamList[Person])
-    persons.create()
+    def create[T](): Unit ={
+        println(primaryConstructorParamList[T])
+    }
 }

@@ -4,9 +4,9 @@ import scala.reflect.ClassTag
 
 object DSL {
 
-    inline def table[T]()(implicit clazzTag: ClassTag[T]) = Table[T]()
+    def table[T]()(implicit clazzTag: ClassTag[T]) = Table[T]()
 
-    inline def table[T](name: String)(implicit clazzTag: ClassTag[T]) = Table[T](name)
+    def table[T](name: String)(implicit clazzTag: ClassTag[T]) = Table[T](name)
 
 
     /* ---------------create------------- */
