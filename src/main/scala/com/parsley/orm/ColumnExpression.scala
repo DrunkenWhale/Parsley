@@ -3,7 +3,12 @@ package com.parsley.orm
 private class ColumnExpression(val name: String, val tpe: String, val attribute: Seq[Attribute]) {
 
     def generateSQLSentence(): String = {
-        s"$name $tpe ${attribute.filterNot(x => x == Attribute.Indexed).mkString(" ")}"
+        s"$name $tpe " +
+            s"${
+                attribute
+                    .filterNot(x => x == Attribute.Indexed)
+                    .map(x => ColumnExpression.attributeMappingToSQL(x)).mkString(" ")
+            }"
     }
 
     def isIndexColumn(): Boolean = {
