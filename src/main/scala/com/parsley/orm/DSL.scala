@@ -22,7 +22,7 @@ object DSL {
 
     extension (self: ColumnMeta) {
         def ==>(attributes: Attribute*): Unit = {
-            ColumnExpression(self.name,"Nil",attributes)
+            
         }
     }
 }

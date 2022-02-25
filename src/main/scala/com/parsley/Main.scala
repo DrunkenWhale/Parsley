@@ -1,6 +1,6 @@
 package com.parsley
 
-import com.parsley.macroImpl.primaryConstructorParamMap
+import com.parsley.macroImpl.primaryConstructorParamList
 import com.parsley.macroImpl.instanceBySeq
 import com.parsley.orm.Attribute
 import com.parsley.orm.DSL.*
@@ -9,7 +9,7 @@ import java.sql.{Date, Time, Timestamp}
 case class A(name:String)
 
 @main def main(): Unit ={
-    println(primaryConstructorParamMap[A])
+    println(primaryConstructorParamList[A])
 }
 
 @main def test1(): Unit ={
@@ -27,8 +27,14 @@ case class A(name:String)
 
 @main def test4(): Unit ={
     inline def create[T](): Unit ={
-        println(primaryConstructorParamMap[T])
+        println(primaryConstructorParamList[T])
     }
     case class Person(name:String,age:Int)
     create[Person]()
+}
+
+import com.parsley.orm.create
+@main def test5(): Unit ={
+    case class Person(name:String,age:Int,gender:Boolean)
+    println(create[Person](Seq()))
 }
