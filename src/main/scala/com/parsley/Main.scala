@@ -35,13 +35,13 @@ case class A(name: String)
     create[Person]()
 }
 
-import com.parsley.orm.create
+import com.parsley.orm.curd.createImpl
 import com.parsley.orm.ImplConv.convertToMeta
 import com.parsley.orm.Attribute.*
 
 @main def test5(): Unit = {
     case class Person(name: String, age: Int, gender: Boolean)
-    println(create[Person](declare(
+    println(createImpl[Person](declare(
         "name" ==> (Indexed, PrimaryKey)
     )))
 }
