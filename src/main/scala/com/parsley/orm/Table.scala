@@ -9,8 +9,8 @@ inline def create[T](columnNameAttributeSeq: Seq[(String, Seq[Attribute])]): Uni
 }
 
 inline def insert[T](x: T): Unit = {
-    val columnExpressionList = primaryConstructorParamList[T].map((name, tpe) => ColumnExpression(name, tpe, Seq()))
-    println(columnExpressionList)
+    val nameAndTypeList: List[(String, String)] = primaryConstructorParamList[T]
+    s"INSERT INTO ${nameOf[T]} () VALUES ()"
 }
 
 inline def query[T](): Unit = {

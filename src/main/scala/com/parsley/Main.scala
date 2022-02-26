@@ -49,7 +49,14 @@ import com.parsley.orm.Attribute.*
 }
 
 import com.parsley.orm.insert
+
 @main def test6(): Unit = {
     case class Person(name: String, age: Int, gender: Boolean)
     println(insert[Person](Person("sss", 2, true)))
+}
+
+import com.parsley.macroImpl.instanceFieldValue
+@main def test7(): Unit = {
+    case class Person(name: String, age: Int, gender: Boolean)
+    println(instanceFieldValue(Person("dssssssdass", 23, true)))
 }
