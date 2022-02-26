@@ -15,6 +15,10 @@ private class ColumnExpression(val name: String, val tpe: String, val attribute:
         attribute.contains(Attribute.Indexed)
     }
 
+    override def toString: String = {
+        s"ColumnExpression($name, $tpe, $attribute)"
+    }
+
 }
 
 protected object ColumnExpression {
@@ -22,7 +26,7 @@ protected object ColumnExpression {
     def apply(name: String, tpe: String, attributes: Seq[Attribute]): ColumnExpression =
         new ColumnExpression(name, typeMappingToSQL(tpe), attributes)
 
-    def attributeMappingToSQL(attribute: Attribute): String = {
+    private def attributeMappingToSQL(attribute: Attribute): String = {
         attribute match {
             case Attribute.PrimaryKey => "PRIMARY KEY"
             case Attribute.Unique => "UNIQUE"

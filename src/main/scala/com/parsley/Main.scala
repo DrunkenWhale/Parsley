@@ -42,6 +42,14 @@ import com.parsley.orm.Attribute.*
 @main def test5(): Unit = {
     case class Person(name: String, age: Int, gender: Boolean)
     println(createImpl[Person](declare(
-        "name" ==> (Indexed, PrimaryKey)
+        "name" ==> (Indexed, PrimaryKey),
+        "age" ==> (Indexed),
+        "gender" ==> (AutoIncrement)
     )))
+}
+
+import com.parsley.orm.insert
+@main def test6(): Unit = {
+    case class Person(name: String, age: Int, gender: Boolean)
+    println(insert[Person](Person("sss", 2, true)))
 }
