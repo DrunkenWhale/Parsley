@@ -14,16 +14,25 @@ private class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
 
     private val columnAttribute: mutable.HashMap[String, Seq[Attribute]] = mutable.HashMap.empty
 
-    def test(): Unit = {
-        println(columnType)
-    }
-
     def create(): Unit = {
 
     }
 
 }
 
-object Table {
+protected object Table {
     def apply[T <: Product](implicit clazzTag: ClassTag[T]): Table[T] = new Table
+
+    def putAttribute(table: Table[_])(seq: Seq[(String, Seq[Attribute])]): Unit = {
+        seq.foreach((name, attributes) => {
+            val opt = table.columnType.get(name)
+            if (opt.isEmpty) {
+                throw new Exception(s"$name is not a column in table: ${table.name}")
+            } else {
+                table.columnAttribute.put(name, attributes)
+            }
+        })
+        println(table.columnAttribute)
+    }
+
 }
