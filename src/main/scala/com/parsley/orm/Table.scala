@@ -51,6 +51,17 @@ private class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
         ExecuteSQL.executeSQL(sql)
     }
 
+    def insert(x: T): Unit = {
+        val element = x.asInstanceOf[Tuple]
+        val elementLength = element.productArity
+        val elementNameValueSeq =
+            for (i <- 0 until elementLength) yield (element.productElementName(i), element.productElement(i))
+        val elementNameListString = elementNameValueSeq.map((name,_)=>name).mkString(",")
+        val elementValueList = elementNameValueSeq.map((_,value)=>value)
+        val sql = s"INSERT INTO `$name` $elementNameListString"
+        println(sql)
+    }
+
 }
 
 protected object Table {

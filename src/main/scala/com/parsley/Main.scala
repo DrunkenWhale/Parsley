@@ -19,6 +19,7 @@ import com.parsley.orm.DSL.is
         person.name is Attribute.PrimaryKey
     ))
     persons.create()
+    persons.insert(person)
 }
 
 @main def test2(): Unit ={}
