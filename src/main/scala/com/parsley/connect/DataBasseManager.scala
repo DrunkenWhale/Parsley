@@ -29,6 +29,6 @@ object DataBaseManager {
     private var dataBaseManager: DataBaseManager = null
 
     
-    def preparedStatement(sql:String) = this.dataBaseManager.connection.prepareStatement(sql)
+    private[parsley] def preparedStatement(sql:String) = this.dataBaseManager.connection.prepareStatement(sql)
 
 }

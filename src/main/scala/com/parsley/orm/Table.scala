@@ -1,6 +1,10 @@
 package com.parsley.orm
 
+import com.parsley.connect.DataBaseManager
+import com.parsley.connect.execute.ExecuteSQL
+
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 private class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
@@ -16,11 +20,41 @@ private class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
 
     def create(): Unit = {
 
+        val indexColumnList = ListBuffer[String]()
+        val columnsSQL: String = columnType.map((name, tpe) => (s"`$name`", TypeMapping.scalaTypeMappingToSQLType(tpe), {
+            val opt = columnAttribute.get(name)
+            if (opt.isEmpty) {
+                ""
+            } else {
+                val seq = opt.get
+                if (seq.contains(Attribute.Indexed)) {
+                    indexColumnList.append(s"`$name`")
+                    seq.filter(x => x != Attribute.Indexed).map(x => x.SQL).mkString(",")
+                } else {
+                    seq.map(x => x.SQL).mkString(",")
+                }
+            }
+        })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
+
+        val indexedSQL =
+            if (indexColumnList.length > 0) {
+                s"INDEX(${indexColumnList.mkString(",")})\n"
+            } else {
+                ""
+            }
+        val sql = s"CREATE TABLE IF NOT EXISTS `$name` (\n" +
+            columnsSQL + "\n" +
+            indexedSQL +
+            s");"
+
+
+        ExecuteSQL.executeSQL(sql)
     }
 
 }
 
 protected object Table {
+
     def apply[T <: Product](implicit clazzTag: ClassTag[T]): Table[T] = new Table
 
     def putAttribute(table: Table[_])(seq: Seq[(String, Seq[Attribute])]): Unit = {
@@ -32,7 +66,6 @@ protected object Table {
                 table.columnAttribute.put(name, attributes)
             }
         })
-        println(table.columnAttribute)
     }
 
 }
