@@ -55,8 +55,3 @@ import com.parsley.orm.insert
     println(insert[Person](Person("sss", 2, true)))
 }
 
-import com.parsley.macroImpl.instanceFieldValue
-@main def test7(): Unit = {
-    case class Person(name: String, age: Int, gender: Boolean)
-    println(instanceFieldValue(Person("dssssssdass", 23, true)))
-}
