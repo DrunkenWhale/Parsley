@@ -1,6 +1,6 @@
 name := "Parsley"
 
-version := "0.3"
+version := "0.7"
 
 scalaVersion := "3.1.1"
 

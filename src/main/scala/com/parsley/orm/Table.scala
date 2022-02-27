@@ -1,26 +1,29 @@
 package com.parsley.orm
 
-import com.parsley.macroImpl.{nameOf, primaryConstructorParamList}
-import com.parsley.orm.curd.createImpl
+import scala.collection.mutable
+import scala.reflect.ClassTag
 
-inline def create[T](columnNameAttributeSeq: Seq[(String, Seq[Attribute])]): Unit = {
-    val createSQL = createImpl[T](columnNameAttributeSeq)
-    // transaction with database
+private class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
+
+    private val clazz = clazzTag.runtimeClass
+    private val name = clazz.getSimpleName
+    // column name map to its type
+    private val columnType: Map[String, String] =
+        clazz.getDeclaredConstructors.head.getParameters
+            .map(x => (x.getName, x.getType.getSimpleName)).toMap
+
+    private val columnAttribute: mutable.HashMap[String, Seq[Attribute]] = mutable.HashMap.empty
+
+    def test(): Unit = {
+        println(columnType)
+    }
+
+    def create(): Unit = {
+
+    }
+
 }
 
-inline def insert[T](x: T): Unit = {
-    val nameAndTypeList: List[(String, String)] = primaryConstructorParamList[T]
-    s"INSERT INTO ${nameOf[T]} () VALUES ()"
-}
-
-inline def query[T](): Unit = {
-
-}
-
-inline def update[T](): Unit = {
-
-}
-
-inline def delete[T](): Unit = {
-
+object Table {
+    def apply[T <: Product](implicit clazzTag: ClassTag[T]): Table[T] = new Table
 }

@@ -1,6 +1,6 @@
 package com.parsley.orm
 
-enum Attribute(SQL: String) {
+enum Attribute(val SQL: String) {
 
     case PrimaryKey extends Attribute("PRIMARY KEY")
     case Indexed extends Attribute("INDEX")
