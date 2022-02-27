@@ -56,10 +56,12 @@ private class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
         val elementLength = element.productArity
         val elementNameValueSeq =
             for (i <- 0 until elementLength) yield (element.productElementName(i), element.productElement(i))
-        val elementNameListString = elementNameValueSeq.map((name,_)=>name).mkString(",")
-        val elementValueList = elementNameValueSeq.map((_,value)=>value)
-        val sql = s"INSERT INTO `$name` $elementNameListString"
+        val elementNameListString = elementNameValueSeq.map((name, _) => "`" + name + "`").mkString(",")
+        val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
+        val sql = s"INSERT INTO `$name` ($elementNameListString) VALUES (${List.fill(elementLength)("?").mkString(",")})"
         println(sql)
+        ExecuteSQL.executeSQL(sql)
+
     }
 
 }
