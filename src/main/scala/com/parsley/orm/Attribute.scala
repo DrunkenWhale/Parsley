@@ -1,13 +1,13 @@
 package com.parsley.orm
 
-enum Attribute {
-    
-    case PrimaryKey extends Attribute
-    case Indexed extends Attribute
-    case Unique extends Attribute
-    case AutoIncrement extends Attribute
-    case NotNull extends Attribute
-//    case DefaultValue[T](x: T) extends Attribute
+enum Attribute(SQL: String) {
+
+    case PrimaryKey extends Attribute("PRIMARY KEY")
+    case Indexed extends Attribute("INDEX")
+    case Unique extends Attribute("UNIQUE")
+    case AutoIncrement extends Attribute("AUTO INCREMENT")
+    case NotNull extends Attribute("NOT NULL")
+    //    case DefaultValue[T](x: T) extends Attribute
     // etc
     // :p
 }
