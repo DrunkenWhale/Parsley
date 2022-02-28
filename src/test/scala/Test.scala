@@ -1,6 +1,6 @@
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.connection.MysqlConnection
-import com.parsley.orm.DSL.{declare, on, table}
+import com.parsley.orm.DSL.{create, declare, on, table}
 
 import java.sql.{Date, Time, Timestamp}
 import com.parsley.orm.{Attribute, Table}
@@ -16,8 +16,7 @@ import com.parsley.orm.DSL.is
     on(persons)(person => declare(
         person.name is Attribute.PrimaryKey
     ))
-    persons.create()
-    persons.insert(person)
+    create(persons)
 }
 
 @main def test2(): Unit ={

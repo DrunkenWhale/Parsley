@@ -1,8 +1,10 @@
 package com.parsley.orm
 
+import com.parsley.connect.execute.ExecuteSQL
 import sourcecode.Text
 
 import java.lang.reflect.Constructor
+import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 object DSL {
@@ -36,5 +38,50 @@ object DSL {
         }
     }
 
+
+    def create(table: Table[_]): Unit = {
+
+        val indexColumnList = ListBuffer[String]()
+        val columnsSQL: String = table.columnType.map((name, tpe) => (s"`$name`", TypeMapping.scalaTypeMappingToSQLType(tpe), {
+            val opt = table.columnAttribute.get(name)
+            if (opt.isEmpty) {
+                ""
+            } else {
+                val seq = opt.get
+                if (seq.contains(Attribute.Indexed)) {
+                    indexColumnList.append(s"`$name`")
+                    seq.filter(x => x != Attribute.Indexed).map(x => x.SQL).mkString(",")
+                } else {
+                    seq.map(x => x.SQL).mkString(",")
+                }
+            }
+        })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
+
+        val indexedSQL =
+            if (indexColumnList.length > 0) {
+                s"INDEX(${indexColumnList.mkString(",")})\n"
+            } else {
+                ""
+            }
+        val sql = s"CREATE TABLE IF NOT EXISTS `${table.name}` (\n" +
+            columnsSQL + "\n" +
+            indexedSQL +
+            s");"
+        // log
+        ExecuteSQL.executeSQL(sql)
+    }
+
+    def insert[T<:Product](table: Table[T])(x: T): Unit = {
+        val element = x.asInstanceOf[Tuple]
+        val elementLength = element.productArity
+        val elementNameValueSeq =
+            for (i <- 0 until elementLength) yield (element.productElementName(i), element.productElement(i))
+        val elementNameListString = elementNameValueSeq.map((name, _) => "`" + name + "`").mkString(",")
+        val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
+        val sql = s"INSERT INTO `${table.name}` ($elementNameListString) VALUES (${List.fill(elementLength)("?").mkString(",")})"
+        // log
+        ExecuteSQL.executeSQLWithValueSeq(sql, elementValueList)
+
+    }
 
 }
