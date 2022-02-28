@@ -1,6 +1,5 @@
 package com.parsley.orm
 
-import com.mysql.cj.x.protobuf.MysqlxExpect.Open.Condition
 import com.parsley.connect.execute.ExecuteSQL
 import sourcecode.Text
 
@@ -22,7 +21,7 @@ object DSL {
     def on[T <: Product](table: Table[T])
                         (operation: (T => Seq[(String, Seq[Attribute])]))
                         (implicit classTag: ClassTag[T]): Unit = {
-        val nameWithAttributeSeq = operation(DataToInstance.fakeInstance[T])
+        val nameWithAttributeSeq = operation(DataToInstance.instanceFromFakeParamSeq[T])
         //change table's map
         Table.putAttribute(table)(nameWithAttributeSeq)
     }
@@ -95,7 +94,10 @@ object DSL {
 
     }
 
-    def query[T <: Product]()(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
-        
+    def query[T <: Product](condition:Condition=new Condition)(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
+        val columnNameString = table.columnName.map(x=>"`"+x+"`").mkString(",")
+        val sql = s"SELECT $columnNameString FROM `${table.name}` ${condition}"
+
+        println(sql)
     }
 }

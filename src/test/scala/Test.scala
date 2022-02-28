@@ -16,6 +16,7 @@ import com.parsley.orm.DSL.*
     on(persons)(person => declare(
         person.name is Attribute.PrimaryKey
     ))
+    query()(persons)
     create(persons)
     insert(person) in persons
 }
