@@ -3,7 +3,7 @@ package com.parsley.orm
 import java.lang.reflect.Constructor
 import scala.reflect.ClassTag
 
-protected object DataToInstance {
+private[parsley] object DataToInstance {
 
     def instanceFromFakeParamSeq[T <: Product](implicit classTag: ClassTag[T]): T = {
         val construtor = classTag.runtimeClass.getConstructors.head

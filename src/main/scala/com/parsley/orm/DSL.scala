@@ -1,6 +1,7 @@
 package com.parsley.orm
 
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.orm.DSL.table
 import sourcecode.Text
 
 import java.lang.reflect.Constructor
@@ -49,6 +50,7 @@ object DSL {
         }
     }
 
+    /* create */
     def create(table: Table[_]): Unit = {
 
         val indexColumnList = ListBuffer[String]()
@@ -81,6 +83,7 @@ object DSL {
         ExecuteSQL.executeSQL(sql)
     }
 
+    /* insert */
     def insert[T <: Product](x: T)(table: Table[T]): Unit = {
         val element = x.asInstanceOf[Tuple]
         val elementLength = element.productArity
@@ -90,14 +93,19 @@ object DSL {
         val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
         val sql = s"INSERT INTO `${table.name}` ($elementNameListString) VALUES (${List.fill(elementLength)("?").mkString(",")})"
         // log
-        ExecuteSQL.executeSQLWithValueSeq(sql, elementValueList)
+        ExecuteSQL.executeInsertSQL(sql, elementValueList)
 
     }
 
-    def query[T <: Product](condition:Condition=new Condition)(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
-        val columnNameString = table.columnName.map(x=>"`"+x+"`").mkString(",")
-        val sql = s"SELECT $columnNameString FROM `${table.name}` ${condition}"
-
-        println(sql)
+    /* query */
+    def query(condition: Condition = new Condition) = {
+        condition
     }
+
+    extension (condition:Condition) {
+        def from[T <: Product](table: Table[T])(implicit classTag: ClassTag[T]): List[T] = {
+            val columnNameString = table.columnName.map(x => "`" + x + "`").mkString(",")
+            val sql = s"SELECT $columnNameString FROM `${table.name}` ${condition}"
+            ExecuteSQL.executeQuerySQL[T](sql, table.columnType)
+        }}
 }
