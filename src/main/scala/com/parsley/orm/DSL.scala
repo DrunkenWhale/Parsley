@@ -1,5 +1,6 @@
 package com.parsley.orm
 
+import com.mysql.cj.x.protobuf.MysqlxExpect.Open.Condition
 import com.parsley.connect.execute.ExecuteSQL
 import sourcecode.Text
 
@@ -38,6 +39,16 @@ object DSL {
         }
     }
 
+    // unuseful method
+    // for the interest
+    // for example:
+    // you can use insert(?)(table) or insert(?) in table
+    // they have the same result
+    extension[T <: Product] (self: Table[T] => _) {
+        def in(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
+            self(table)
+        }
+    }
 
     def create(table: Table[_]): Unit = {
 
@@ -71,7 +82,7 @@ object DSL {
         ExecuteSQL.executeSQL(sql)
     }
 
-    def insert[T<:Product](table: Table[T])(x: T): Unit = {
+    def insert[T <: Product](x: T)(table: Table[T]): Unit = {
         val element = x.asInstanceOf[Tuple]
         val elementLength = element.productArity
         val elementNameValueSeq =
@@ -84,4 +95,7 @@ object DSL {
 
     }
 
+    def query[T <: Product]()(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
+        
+    }
 }
