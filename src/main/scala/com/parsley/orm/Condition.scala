@@ -11,7 +11,7 @@ class Condition {
         if (sqlString.isEmpty) {
             ""
         } else {
-            s" WHERE ${sqlString.result()}"
+            s"WHERE ${sqlString.result()}"
         }
     }
 
@@ -43,4 +43,13 @@ object Condition {
             res
         }
     }
+
+    def limit(number: Int): Condition = {
+        new Condition {
+            override def toString: String = {
+                s"LIMIT ${number}"
+            }
+        }
+    }
+
 }

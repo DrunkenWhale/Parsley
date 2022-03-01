@@ -16,7 +16,8 @@ import com.parsley.orm.DSL.*
     on(persons)(person => declare(
         person.name is Attribute.PrimaryKey
     ))
-    println((query(limit(1)) from persons))
+    println((query("age" === 114514 limit 1) from persons))
+    println((query(limit(114514)) from persons))
     create(persons)
     insert(Person(Random.nextString(3),Random.nextInt(377))) in persons
 }
