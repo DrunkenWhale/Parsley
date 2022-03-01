@@ -1,20 +1,15 @@
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.connection.MysqlConnection
-
-import java.sql.{Date, Time, Timestamp}
-import com.parsley.orm.{Attribute, Condition, Table}
-import com.parsley.orm.Condition.*
-
 import scala.util.Random
 case class Person(name: String = "114514", age: Int)
 import com.parsley.orm.DSL.*
-
+import com.parsley.orm.Table
 @main def test1(): Unit = {
     DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
     val person = Person("野兽前辈", 114514)
     val persons = table[Person]
     on(persons)(person => declare(
-        person.name is Attribute.PrimaryKey
+        person.name is PrimaryKey
     ))
     println((query("age" === 114514 limit 1) from persons))
     println((query(limit(114514)) from persons))
