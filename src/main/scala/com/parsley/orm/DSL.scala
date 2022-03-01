@@ -10,6 +10,8 @@ import scala.reflect.ClassTag
 
 object DSL {
 
+//    export Condition.===
+    
     def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
     def declare(columnNameWithAttribute: (String, Seq[Attribute])*): Seq[(String, Seq[Attribute])] = {
@@ -102,10 +104,13 @@ object DSL {
         condition
     }
 
-    extension (condition:Condition) {
+    extension (condition: Condition) {
         def from[T <: Product](table: Table[T])(implicit classTag: ClassTag[T]): List[T] = {
             val columnNameString = table.columnName.map(x => "`" + x + "`").mkString(",")
             val sql = s"SELECT $columnNameString FROM `${table.name}` ${condition}"
+            println(sql)
             ExecuteSQL.executeQuerySQL[T](sql, table.columnType)
-        }}
+        }
+    }
+    /* update */
 }
