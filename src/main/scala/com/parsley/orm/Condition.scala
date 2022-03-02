@@ -3,8 +3,8 @@ package com.parsley.orm
 /**
  * call toString method will generate a string
  * include:
- *      WHERE xxx
- *      LIMIT xxx
+ * WHERE xxx
+ * LIMIT xxx
  * */
 class Condition {
 
@@ -20,13 +20,13 @@ class Condition {
 
     def and(condition: Condition): Condition = {
         val res = new Condition()
-        res.sqlString.append(s"${condition.sqlString.result} AND ${this.sqlString.result()}")
+        res.sqlString.append(s"${this.sqlString.result()} AND ${condition.sqlString.result}")
         res
     }
 
     def or(condition: Condition): Condition = {
         val res = new Condition()
-        res.sqlString.append(s"${condition.sqlString.result} OR ${this.sqlString.result()}")
+        res.sqlString.append(s"${this.sqlString.result} OR ${condition.sqlString.result()}")
         res
     }
 
@@ -40,8 +40,8 @@ class Condition {
 
 object Condition {
 
-    val * :Condition = new Condition()
-    
+    val * : Condition = new Condition()
+
     extension (self: String) {
         def ===(x: Int | Double | String | Long | Boolean | Float | Char): Condition = {
             val res = new Condition()

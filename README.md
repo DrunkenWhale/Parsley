@@ -66,7 +66,13 @@ this column's name = "野兽前辈"，age=114514
 
 ### Update
 
-    Future
+```scala
+
+update("age"==>114514) where * into persons
+
+```
+
+this operation will set all columns' `age == 114514` in table `Person`
 
 ### Delete
 
@@ -85,4 +91,4 @@ delete("age"===114514) in persons
 
 ```
 
-this operation will delete all columns that age == 114514
+this operation will delete all columns that `age == 114514`

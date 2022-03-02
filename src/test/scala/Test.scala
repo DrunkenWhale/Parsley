@@ -17,10 +17,11 @@ case class Person(name: String = "114514", age: Int)
     println((query("age" === 114514 and "name" === "野兽先辈" limit 1) from persons))
     println((query(limit(114514)) from persons))
     create(persons)
-    insert(Person(Random.nextString(3), Random.nextInt(377))) in persons
-    delete(*) in persons
+    val a = update("age"==>114514) where * into persons
+    println(a)
+//    delete(*) in persons
 }
 
 @main def test2(): Unit = {
-    
+
 }

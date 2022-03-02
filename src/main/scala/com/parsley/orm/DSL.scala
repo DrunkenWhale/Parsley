@@ -41,9 +41,31 @@ object DSL {
 
     /*-------------------------------update---------------------------------------------*/
 
-    def update[T <: Product](condition: Condition)(table:Table[T]): Unit = {
-        s"UPDATE `${table.name}` $condition"
+    def update(updateOperation: UpdateOperation): UpdateOperation = {
+        updateOperation
     }
+
+    extension (self: Condition) {
+        def into(table: Table[_]): Unit = {
+            val sql = s"UPDATE `${table.name}` $self;"
+            println(sql)
+            ExecuteSQL.executeUpdateSQL(sql)
+        }
+    }
+
+    extension (self: UpdateOperation) {
+        def where(condition: Condition = Condition.`*`): Condition = {
+            val res = new Condition{
+                override def toString: String = {
+                    this.sqlString.append(s"${self} ${condition.sqlString.result()}").result()
+                }
+            }
+            res
+        }
+    }
+
+
+    export UpdateOperation.==>
 
     /*-------------------------------delete---------------------------------------------*/
 

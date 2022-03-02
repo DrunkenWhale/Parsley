@@ -7,8 +7,12 @@ import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 private[parsley] object ExecuteSQL {
-    def executeSQL(sql: String): Unit = {
+    def executeSQL(sql: String): Boolean = {
         DataBaseManager.preparedStatement(sql).execute
+    }
+
+    def executeUpdateSQL(sql: String): Int = {
+        DataBaseManager.preparedStatement(sql).executeUpdate()
     }
 
     def executeQuerySQL[T <: Product](sql: String, columnType: Map[String, String])(implicit classTag: ClassTag[T]): List[T] = {
