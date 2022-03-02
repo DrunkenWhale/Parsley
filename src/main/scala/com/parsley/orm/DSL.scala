@@ -41,8 +41,8 @@ object DSL {
 
     /*-------------------------------update---------------------------------------------*/
 
-    def update[T <: Product]()(): Unit = {
-
+    def update[T <: Product](condition: Condition)(table:Table[T]): Unit = {
+        s"UPDATE `${table.name}` $condition"
     }
 
     /*-------------------------------delete---------------------------------------------*/

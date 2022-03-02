@@ -1,7 +1,10 @@
 package com.parsley.orm
 
 /**
- * default query all columns
+ * call toString method will generate a string
+ * include:
+ *      WHERE xxx
+ *      LIMIT xxx
  * */
 class Condition {
 
