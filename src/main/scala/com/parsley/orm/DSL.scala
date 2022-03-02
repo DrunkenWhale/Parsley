@@ -1,8 +1,27 @@
 package com.parsley.orm
 
+import com.parsley.connect.execute.ExecuteSQL
+
 import scala.reflect.ClassTag
 
 object DSL {
+
+    /*------------------------------table----------------------------------------------*/
+
+    def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
+
+
+    // unuseful method
+    // for the interest
+    // for example:
+    // you can use insert(?)(table) or insert(?) in table
+    // they have the same result
+    extension[T <: Product] (self: Table[T] => _) {
+        def in(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
+            self(table)
+        }
+    }
+
 
     /*-------------------------------create------------------------------------------*/
 
@@ -14,12 +33,21 @@ object DSL {
     /*-------------------------------insert-------------------------------------------*/
 
     export com.parsley.orm.curd.InsertImpl.insert
-    export com.parsley.orm.curd.InsertImpl.in
 
     /*-------------------------------query--------------------------------------------*/
 
     export com.parsley.orm.curd.QueryImpl.query
     export com.parsley.orm.curd.QueryImpl.from
+
+    /*-------------------------------update---------------------------------------------*/
+
+    def update[T <: Product]()(): Unit = {
+
+    }
+
+    /*-------------------------------delete---------------------------------------------*/
+
+    export com.parsley.orm.curd.DeleteImpl
 
     /*-----------------------------condition-------------------------------------------*/
 
@@ -33,8 +61,5 @@ object DSL {
     export com.parsley.orm.Attribute.AutoIncrement
     export com.parsley.orm.Attribute.Unique
     export com.parsley.orm.Attribute.NotNull
-
-    /*------------------------------table----------------------------------------------*/
-    def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
 }

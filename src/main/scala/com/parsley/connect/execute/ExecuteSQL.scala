@@ -6,12 +6,12 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
-object ExecuteSQL {
-    private[parsley] def executeSQL(sql: String): Unit = {
+private[parsley] object ExecuteSQL {
+    def executeSQL(sql: String): Unit = {
         DataBaseManager.preparedStatement(sql).execute
     }
 
-    private[parsley] def executeQuerySQL[T <: Product](sql: String, columnType: Map[String, String])(implicit classTag: ClassTag[T]): List[T] = {
+    def executeQuerySQL[T <: Product](sql: String, columnType: Map[String, String])(implicit classTag: ClassTag[T]): List[T] = {
         val res = ListBuffer[T]()
         val resultSet = DataBaseManager.preparedStatement(sql).executeQuery()
         val columnTypeList = columnType.toList
