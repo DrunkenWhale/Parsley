@@ -1,6 +1,7 @@
 package com.parsley.orm.curd
 
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.logger.Logger
 import com.parsley.orm.{Attribute, DataToInstance, Table, TypeMapping}
 
 import scala.collection.mutable.ListBuffer
@@ -36,7 +37,13 @@ object CreateImpl {
             columnsSQL + "\n" +
             indexedSQL +
             s");"
-        // log
+        
+        /*-----------------Logger--------------*/
+        
+        Logger.logginSQL(sql)
+        
+        /*-------------------------------------*/
+        
         ExecuteSQL.executeSQL(sql)
     }
 

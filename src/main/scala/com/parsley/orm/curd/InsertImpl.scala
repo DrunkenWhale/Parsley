@@ -1,6 +1,7 @@
 package com.parsley.orm.curd
 
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.logger.Logger
 import com.parsley.orm.Table
 
 import scala.reflect.ClassTag
@@ -16,7 +17,11 @@ object InsertImpl {
         val elementNameListString = elementNameValueSeq.map((name, _) => "`" + name + "`").mkString(",")
         val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
         val sql = s"INSERT INTO `${table.name}` ($elementNameListString) VALUES (${List.fill(elementLength)("?").mkString(",")})"
-        // log
+        /*-----------------Logger--------------*/
+
+        Logger.logginSQL(sql)
+
+        /*-------------------------------------*/
         ExecuteSQL.executeInsertSQL(sql, elementValueList)
 
     }

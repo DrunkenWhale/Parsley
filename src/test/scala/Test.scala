@@ -14,11 +14,9 @@ case class Person(name: String = "114514", age: Int)
     on(persons)(person => declare(
         person.name is PrimaryKey
     ))
-    println((query("age" === 114514 and "name" === "野兽先辈" limit 1) from persons))
     println((query(limit(114514)) from persons))
     create(persons)
     val a = update("age"==>114514) into persons
-    println(a)
 //    delete(*) in persons
 }
 
