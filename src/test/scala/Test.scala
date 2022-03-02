@@ -18,7 +18,7 @@ case class Person(name: String = "114514", age: Int)
     println((query(limit(114514)) from persons))
     create(persons)
     insert(Person(Random.nextString(3), Random.nextInt(377))) in persons
-    delete() in persons
+    delete(*) in persons
 }
 
 @main def test2(): Unit = {

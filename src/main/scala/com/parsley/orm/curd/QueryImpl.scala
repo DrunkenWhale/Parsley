@@ -7,7 +7,7 @@ import scala.reflect.ClassTag
 
 object QueryImpl {
     /* query */
-    def query(condition: Condition = Condition()) = {
+    def query(condition: Condition) = {
         condition
     }
 

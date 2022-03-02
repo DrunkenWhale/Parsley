@@ -47,12 +47,13 @@ object DSL {
 
     /*-------------------------------delete---------------------------------------------*/
 
-    export com.parsley.orm.curd.DeleteImpl
+    export com.parsley.orm.curd.DeleteImpl.delete
 
     /*-----------------------------condition-------------------------------------------*/
 
     export com.parsley.orm.Condition.===
     export com.parsley.orm.Condition.limit
+    export com.parsley.orm.Condition.`*`
 
     /*-----------------------------attribute---------------------------------------------*/
 

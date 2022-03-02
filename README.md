@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `Person`{
 query all columns:
 
 ```scala
-    query() from persons
+    query(*) from persons
 ```
   
 return `List[Person]`
@@ -70,4 +70,19 @@ this column's name = "野兽前辈"，age=114514
 
 ### Delete
 
-    Future
+delete all columns in table `Person`
+
+```scala
+
+delete(*) in persons
+
+```
+
+delete special column
+
+```scala
+delete("age"===114514) in persons
+
+```
+
+this operation will delete all columns that age == 114514

@@ -37,7 +37,7 @@ class Condition {
 
 object Condition {
 
-    def apply(): Condition = new Condition()
+    val * :Condition = new Condition()
     
     extension (self: String) {
         def ===(x: Int | Double | String | Long | Boolean | Float | Char): Condition = {
