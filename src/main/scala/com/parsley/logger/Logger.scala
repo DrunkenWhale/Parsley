@@ -3,10 +3,10 @@ package com.parsley.logger
 import scala.util.Random
 
 
-object Logger {
+private[parsley] object Logger {
     def logginSQL(sql: String) = {
         // log implement
-        println(colorArray(Random.nextInt(8)) + sql + Console.RESET)
+        println("\n" + colorArray(Random.nextInt(8)) + sql + Console.RESET + "\n")
     }
 
     private final val colorArray = Array(
@@ -18,7 +18,7 @@ object Logger {
         , "\u001b[35m"
         , "\u001b[36m"
         , "\u001b[37m"
-        )
+    )
 
 
 }

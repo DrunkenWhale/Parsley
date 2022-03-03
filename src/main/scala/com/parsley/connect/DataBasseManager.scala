@@ -1,6 +1,5 @@
 package com.parsley.connect
 
-
 import com.parsley.connect.connection.{DataBaseConnection, MysqlConnection}
 
 import java.sql.{Connection, DriverManager, Statement}

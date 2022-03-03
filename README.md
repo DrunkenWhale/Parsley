@@ -22,6 +22,8 @@ on(persons)(person => declare(
     person.age is Indexed
 ))
 
+create(persons)
+
 ```
 
 this code equals execute SQL:
