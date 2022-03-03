@@ -10,6 +10,8 @@ object DSL {
 
     def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
+    def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
+
 
     // unuseful method
     // for the interest

@@ -7,10 +7,9 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
-class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
+class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: ClassTag[T]) {
 
     private[parsley] val clazz = clazzTag.runtimeClass
-    private[parsley] val name = clazz.getSimpleName
 
     // all columns name
     private[parsley] val columnName =
@@ -32,8 +31,10 @@ class Table[T <: Product](implicit clazzTag: ClassTag[T]) {
 }
 
 protected object Table {
-    
-    def apply[T <: Product](implicit clazzTag: ClassTag[T]): Table[T] = new Table
+
+    def apply[T <: Product](implicit clazzTag: ClassTag[T]): Table[T] = new Table(name = clazzTag.runtimeClass.getSimpleName)
+
+    def apply[T <: Product](name: String)(implicit clazzTag: ClassTag[T]): Table[T] = new Table(name)
 
     def putAttribute(table: Table[_])(seq: Seq[(String, Seq[Attribute])]): Unit = {
         seq.foreach((name, attributes) => {

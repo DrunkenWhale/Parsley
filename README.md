@@ -30,11 +30,11 @@ this code equals execute SQL:
 
 ```sql
 
-CREATE TABLE IF NOT EXISTS `Person`{
+CREATE TABLE IF NOT EXISTS `Person`(
     `name` CHAR(128) PRIMARY KEY ,
     `age` INT,
     INDEX(`age`)
-};
+);
 
 ```
 
