@@ -28,6 +28,14 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     //
     //    }
 
+    // 被映射的字段 : 主表名 => 本身表中用于join的字段的名字
+    private[parsley] val followRelation: mutable.HashMap[String, String] =
+        mutable.HashMap.empty
+
+    // 从表名 => 从表中用于join的字段
+    private[parsley] val mainRelation: mutable.HashMap[String, String] =
+        mutable.HashMap.empty
+
 }
 
 protected object Table {
