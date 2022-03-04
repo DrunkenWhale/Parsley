@@ -53,7 +53,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
         queryImpl(condition) from this
     }
 
-    def queryRelation[F <: Product](tb: Table[F])(x: T)(implicit clsTag: ClassTag[F]):List[F] = {
+    def queryRelation[F <: Product](tb: Table[F])(x: T)(implicit clsTag: ClassTag[F]): List[F] = {
         var value: Any = null
         for (i <- 0 until x.productArity) {
             if (x.productElementName(i) == this.primary._1) {
@@ -77,6 +77,31 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
 
     def insert(x: T): Unit = {
         insertImpl(x) in this
+    }
+
+    def insertRelation[F <: Product](tb: Table[F])(x: T)(followInstance: F): Unit = {
+        val xElement = x.asInstanceOf[Tuple]
+        val xElementLength = xElement.productArity
+        val xElementNameValueSeq =
+            for (i <- 0 until xElementLength) yield (xElement.productElementName(i), xElement.productElement(i))
+        val relationColumnValue = xElementNameValueSeq.find((name, _) => name == this.primary._1).get._2
+        val element = followInstance.asInstanceOf[Tuple]
+        val elementLength = element.productArity
+        val elementNameValueSeq =
+            for (i <- 0 until elementLength) yield (element.productElementName(i), element.productElement(i))
+        val elementNameListString = elementNameValueSeq.map((name, _) => "`" + name + "`").mkString(",")
+        val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
+
+        val columnRelation = s"`${this.name}_${tb.name}`"
+
+        val sql = s"INSERT INTO `${tb.name}` ($elementNameListString,$columnRelation) " +
+            s"VALUES (${List.fill(elementLength+1)("?").mkString(",")})"
+        /*-----------------Logger--------------*/
+
+        Logger.logginSQL(sql)
+
+        /*-------------------------------------*/
+        ExecuteSQL.executeInsertSQL(sql, elementValueList.appended(relationColumnValue))
     }
 
     def update(updateOperation: UpdateOperation)(condition: Condition = Condition.*): Unit = {
