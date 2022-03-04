@@ -8,7 +8,7 @@ package com.parsley.orm.attribute
  * 3 => Unique
  * 4 => NotNull
  * 5 => Indexed
- *
+ * 6 => ManyToOne
  * */
 
 trait Attribute {

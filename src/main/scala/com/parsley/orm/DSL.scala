@@ -12,18 +12,6 @@ object DSL {
     def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
     def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
-    
-
-    // unuseful method
-    // for the interest
-    // for example:
-    // you can use insert(?)(table) or insert(?) in table
-    // they have the same result
-    extension[T <: Product] (self: Table[T] => _) {
-        def in(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
-            self(table)
-        }
-    }
 
 
     /*-------------------------------create------------------------------------------*/

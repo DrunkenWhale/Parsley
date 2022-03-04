@@ -21,9 +21,9 @@ object CreateImpl {
                 val seq = opt.get
                 if (seq.contains(DSL.indexed)) {
                     indexColumnList.append(s"`$name`")
-                    seq.filter(x => x != DSL.indexed).map(x => x.sql()).mkString(",")
+                    seq.filter(x => x != DSL.indexed).map(x => x.sql).mkString(",")
                 } else {
-                    seq.map(x => x.sql()).mkString(",")
+                    seq.map(x => x.sql).mkString(",")
                 }
             }
         })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")

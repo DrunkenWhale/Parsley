@@ -3,6 +3,11 @@ package com.parsley.orm
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.orm.attribute.Attribute
+import com.parsley.orm.curd.CreateImpl.{create => createImpl}
+import com.parsley.orm.curd.QueryImpl.{query => queryImpl, from}
+import com.parsley.orm.curd.InsertImpl.{insert => insertImpl, in}
+import com.parsley.orm.curd.UpdateImpl.{update => updateImpl, into, where}
+import com.parsley.orm.curd.DeleteImpl.{delete => deleteImpl}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -13,7 +18,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     // name,type
     private[parsley] lazy val primary: (String, String) = {
         val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(DSL.primaryKey)).head._1
-        (name,columnType(primaryKeyName))
+        (name, columnType(primaryKeyName))
     }
 
     private[parsley] val clazz = clazzTag.runtimeClass
@@ -30,10 +35,6 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     // column name map to its attribute
     private[parsley] val columnAttribute: mutable.HashMap[String, Seq[Attribute]] =
         mutable.HashMap.empty
-    //
-    //    def query(): T = {
-    //
-    //    }
 
     // 被映射的字段 : 本身表中用于join的字段的名字 => 主表主键的类型
     private[parsley] val followRelation: mutable.HashMap[String, String] =
@@ -42,6 +43,27 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     // 从表名 => 从表中用于join的字段
     private[parsley] val mainRelation: mutable.HashMap[String, String] =
         mutable.HashMap.empty
+
+    def create(): Unit = {
+        createImpl(this)
+    }
+
+    def query(condition: Condition): List[T] = {
+        queryImpl(condition) from this
+    }
+
+
+    def insert(x: T): Unit = {
+        insertImpl(x) in this
+    }
+
+    def update(updateOperation: UpdateOperation)(condition: Condition = Condition.*): Unit = {
+        updateImpl(updateOperation) where (condition) into this
+    }
+
+    def delete(condition: Condition): Unit = {
+        deleteImpl(condition)(this)
+    }
 
 }
 
