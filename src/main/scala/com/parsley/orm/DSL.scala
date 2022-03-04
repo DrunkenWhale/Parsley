@@ -9,6 +9,13 @@ object DSL {
 
     /*------------------------------table----------------------------------------------*/
 
+    extension (mainTable: Table[_]) {
+        def <==(followTable: Table[_]) = {
+            followTable.followingTables.append(mainTable)
+            mainTable.followedTables.append(followTable)
+        }
+    }
+
     def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
     def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)

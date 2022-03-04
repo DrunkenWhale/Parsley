@@ -29,8 +29,8 @@ object CreateImpl {
         })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
 
         val followRelationSQL =
-            if (!table.followRelation.isEmpty) {
-                "," + table.followRelation.map((name, tpe) => s"$name ${TypeMapping.scalaTypeMappingToSQLType(tpe)}").mkString(",")+"\n"
+            if (!table.followingTables.isEmpty) {
+                "," + table.followingTables.map((t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primary._2)}").mkString(",") + "\n"
             } else {
                 ""
             }

@@ -2,16 +2,19 @@ package com.parsley.orm
 
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.logger.Logger
 import com.parsley.orm.attribute.Attribute
-import com.parsley.orm.curd.CreateImpl.{create => createImpl}
-import com.parsley.orm.curd.QueryImpl.{query => queryImpl, from}
-import com.parsley.orm.curd.InsertImpl.{insert => insertImpl, in}
-import com.parsley.orm.curd.UpdateImpl.{update => updateImpl, into, where}
-import com.parsley.orm.curd.DeleteImpl.{delete => deleteImpl}
+import com.parsley.orm.curd.CreateImpl.create as createImpl
+import com.parsley.orm.curd.QueryImpl.{from, query as queryImpl}
+import com.parsley.orm.curd.InsertImpl.{in, insert as insertImpl}
+import com.parsley.orm.curd.UpdateImpl.{into, where, update as updateImpl}
+import com.parsley.orm.curd.DeleteImpl.delete as deleteImpl
+import com.parsley.orm.Condition.*
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
+import scala.util.control.Breaks.break
 
 class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: ClassTag[T]) {
 
@@ -36,13 +39,11 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     private[parsley] val columnAttribute: mutable.HashMap[String, Seq[Attribute]] =
         mutable.HashMap.empty
 
-    // 被映射的字段 : 本身表中用于join的字段的名字 => 主表主键的类型
-    private[parsley] val followRelation: mutable.HashMap[String, String] =
-        mutable.HashMap.empty
+    private[parsley] val followingTables: mutable.ListBuffer[Table[_]] =
+        mutable.ListBuffer.empty
 
-    // 从表名 => 从表中用于join的字段
-    private[parsley] val mainRelation: mutable.HashMap[String, String] =
-        mutable.HashMap.empty
+    private[parsley] val followedTables: mutable.ListBuffer[Table[_]] =
+        mutable.ListBuffer.empty
 
     def create(): Unit = {
         createImpl(this)
@@ -52,6 +53,21 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
         queryImpl(condition) from this
     }
 
+    def queryRelation[F <: Product](tb: Table[F])(x: T)(condition: Condition)(implicit clsTag: ClassTag[F]): Unit = {
+        var value: Any = null
+        println(this.primary)
+        for (i <- 0 until x.productArity) {
+            println(x.productElementName(i))
+            println(this.primary._1)
+            if (x.productElementName(i) == this.primary._1) {
+                value = x.productElement(i)
+                println(x.productElement(i))
+                break
+            }
+        }
+        val sql = s"`${this.name}_${tb.name}` $value"
+        println(sql)
+    }
 
     def insert(x: T): Unit = {
         insertImpl(x) in this

@@ -25,29 +25,25 @@ case class Person(name: String = "114514", age: Int) {
 }
 
 
-case class Student(name: String, age: Int, books: List[Book])
+case class Student(name: String, age: Int)
 
 case class Book(name: String, age: Int)
 
 @main def test2(): Unit = {
-    val student = Student("???", 114514, List())
-
-    def g[T]()(implicit classTag: ClassTag[T]): Unit = {
-        classTag.runtimeClass.getDeclaredConstructors.head.getParameters.foreach(x => println(x.getParameterizedType.getTypeName))
-    }
-
-    g[Student]()
-    //    DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
-    //    val students = table[Student]
-    //    val books = table[Book]
-    //    on(students)(student => declare(
-    //        student.name is primaryKey
-    //    ))
-    //    on(books)(book=>declare(
-    //        book.name is primaryKey
-    //    ))
-    //    create(students)
-    //    create(books)
+    DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
+    val students = table[Student]
+    val books = table[Book]
+    on(students)(student => declare(
+        student.name is primaryKey
+    ))
+    on(books)(book => declare(
+        book.name is primaryKey
+    ))
+    students <== books
+    create(students)
+    create(books)
+    val student = Student("114", 514)
+    students.queryRelation(books)(student)(*)
 }
 
 object DataBase {
@@ -55,5 +51,4 @@ object DataBase {
     on(students)(student => declare(
         student.name is primaryKey
     ))
-    
 }
