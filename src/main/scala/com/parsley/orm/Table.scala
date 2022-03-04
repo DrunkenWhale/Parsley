@@ -2,6 +2,7 @@ package com.parsley.orm
 
 import com.parsley.connect.DataBaseManager
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.orm.attribute.Attribute
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -11,7 +12,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
 
     // name,type
     private[parsley] lazy val primary: (String, String) = {
-        val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(Attribute.PrimaryKey)).head._1
+        val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(DSL.primaryKey)).head._1
         (name,columnType(primaryKeyName))
     }
 

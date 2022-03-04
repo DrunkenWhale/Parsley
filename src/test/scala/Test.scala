@@ -16,7 +16,7 @@ case class Person(name: String = "114514", age: Int) {
     val person = Person("野兽前辈", 114514)
     val persons = table[Person]
     on(persons)(person => declare(
-        person.name is PrimaryKey
+        person.name is primaryKey
     ))
     println((query(limit(114514)) from persons))
     create(persons)
@@ -32,12 +32,11 @@ case class Book(name:String,age:Int)
     val students = table[Student]
     val books = table[Book]
     on(students)(student => declare(
-        student.name is PrimaryKey
+        student.name is primaryKey
     ))
     on(books)(book=>declare(
-        book.name is PrimaryKey
+        book.name is primaryKey
     ))
-    oneToMany(students)(books)
     create(students)
     create(books)
 }

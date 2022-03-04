@@ -2,7 +2,8 @@ package com.parsley.orm.curd
 
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
-import com.parsley.orm.{Attribute, DataToInstance, Table, TypeMapping}
+import com.parsley.orm.{DSL, DataToInstance, Table, TypeMapping}
+import com.parsley.orm.attribute.Attribute
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -18,11 +19,11 @@ object CreateImpl {
                 ""
             } else {
                 val seq = opt.get
-                if (seq.contains(Attribute.Indexed)) {
+                if (seq.contains(DSL.indexed)) {
                     indexColumnList.append(s"`$name`")
-                    seq.filter(x => x != Attribute.Indexed).map(x => x.SQL).mkString(",")
+                    seq.filter(x => x != DSL.indexed).map(x => x.sql()).mkString(",")
                 } else {
-                    seq.map(x => x.SQL).mkString(",")
+                    seq.map(x => x.sql()).mkString(",")
                 }
             }
         })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")

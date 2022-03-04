@@ -1,6 +1,7 @@
 package com.parsley.orm
 
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.orm.attribute.{AutoIncrement, Indexed, NotNull, PrimaryKey, Unique}
 
 import scala.reflect.ClassTag
 
@@ -11,11 +12,7 @@ object DSL {
     def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
     def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
-
-    def oneToMany(mainTable: Table[_])(followTable: Table[_]): Unit = {
-        followTable.followRelation.put(s"`${mainTable.name}_${followTable.name}_uuid`".toLowerCase,mainTable.primary._2)
-        mainTable.mainRelation.put(s"${followTable.name}", s"`${mainTable.name}_${followTable.name}_uuid`".toLowerCase)
-    }
+    
 
     // unuseful method
     // for the interest
@@ -64,10 +61,9 @@ object DSL {
 
     /*-----------------------------attribute---------------------------------------------*/
 
-    export com.parsley.orm.Attribute.PrimaryKey
-    export com.parsley.orm.Attribute.Indexed
-    export com.parsley.orm.Attribute.AutoIncrement
-    export com.parsley.orm.Attribute.Unique
-    export com.parsley.orm.Attribute.NotNull
-
+    val primaryKey = new PrimaryKey()
+    val autoIncrement = new AutoIncrement()
+    val notNull = new NotNull()
+    val unique = new Unique()
+    val indexed = new Indexed()
 }
