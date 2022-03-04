@@ -1,6 +1,7 @@
 package com.parsley.orm
 
 import com.parsley.connect.execute.ExecuteSQL
+import com.parsley.orm.attribute.{AutoIncrement, Indexed, NotNull, PrimaryKey, Unique}
 
 import scala.reflect.ClassTag
 
@@ -8,21 +9,16 @@ object DSL {
 
     /*------------------------------table----------------------------------------------*/
 
+    extension (mainTable: Table[_]) {
+        def <==(followTable: Table[_]) = {
+            followTable.followingTables.append(mainTable)
+            mainTable.followedTables.append(followTable)
+        }
+    }
+
     def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
 
     def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
-
-
-    // unuseful method
-    // for the interest
-    // for example:
-    // you can use insert(?)(table) or insert(?) in table
-    // they have the same result
-    extension[T <: Product] (self: Table[T] => _) {
-        def in(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
-            self(table)
-        }
-    }
 
 
     /*-------------------------------create------------------------------------------*/
@@ -60,10 +56,9 @@ object DSL {
 
     /*-----------------------------attribute---------------------------------------------*/
 
-    export com.parsley.orm.Attribute.PrimaryKey
-    export com.parsley.orm.Attribute.Indexed
-    export com.parsley.orm.Attribute.AutoIncrement
-    export com.parsley.orm.Attribute.Unique
-    export com.parsley.orm.Attribute.NotNull
-
+    val primaryKey = new PrimaryKey()
+    val autoIncrement = new AutoIncrement()
+    val notNull = new NotNull()
+    val unique = new Unique()
+    val indexed = new Indexed()
 }

@@ -7,6 +7,18 @@ import com.parsley.orm.Table
 import scala.reflect.ClassTag
 
 object InsertImpl {
+
+
+    // unuseful method
+    // for the interest
+    // for example:
+    // you can use insert(?)(table) or insert(?) in table
+    // they have the same result
+    extension[T <: Product] (self: Table[T] => _) {
+        def in(table: Table[T])(implicit classTag: ClassTag[T]): Unit = {
+            self(table)
+        }
+    }
     
     /* insert */
     def insert[T <: Product](x: T)(table: Table[T]): Unit = {
