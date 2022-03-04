@@ -21,7 +21,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     // name,type
     private[parsley] lazy val primary: (String, String) = {
         val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(DSL.primaryKey)).head._1
-        (name, columnType(primaryKeyName))
+        (primaryKeyName, columnType(primaryKeyName))
     }
 
     private[parsley] val clazz = clazzTag.runtimeClass
@@ -53,20 +53,26 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
         queryImpl(condition) from this
     }
 
-    def queryRelation[F <: Product](tb: Table[F])(x: T)(condition: Condition)(implicit clsTag: ClassTag[F]): Unit = {
+    def queryRelation[F <: Product](tb: Table[F])(x: T)(implicit clsTag: ClassTag[F]):List[F] = {
         var value: Any = null
-        println(this.primary)
         for (i <- 0 until x.productArity) {
-            println(x.productElementName(i))
-            println(this.primary._1)
             if (x.productElementName(i) == this.primary._1) {
                 value = x.productElement(i)
-                println(x.productElement(i))
-                break
+                // break
+                // this control syntax......
+                // ... must be changed
             }
         }
-        val sql = s"`${this.name}_${tb.name}` $value"
-        println(sql)
+        val followedTableJoinColumnName = s"${this.name}_${tb.name}"
+        val columnNameString = tb.columnName.map(x => s"`${tb.name}`.`$x`").mkString(",")
+        val sql =
+            s"SELECT $columnNameString" +
+                s" FROM `${tb.name}`" +
+                s" JOIN `${this.name}`" +
+                s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${this.name}`.`${primary._1}`" +
+                s" WHERE `${this.name}`.`${this.primary._1}`='$value';"
+        Logger.logginSQL(sql)
+        ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)
     }
 
     def insert(x: T): Unit = {

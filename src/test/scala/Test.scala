@@ -42,8 +42,10 @@ case class Book(name: String, age: Int)
     students <== books
     create(students)
     create(books)
-    val student = Student("114", 514)
-    students.queryRelation(books)(student)(*)
+    val student = Student("反射魔典", 514)
+//    students.insert(student)
+    val list = students.queryRelation(books)(student)
+    list.foreach(println)
 }
 
 object DataBase {
