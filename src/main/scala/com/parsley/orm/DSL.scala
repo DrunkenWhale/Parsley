@@ -12,8 +12,9 @@ object DSL {
 
     def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
 
-    def oneToMany[T, F](mainTable: Table[T])(followTable: Table[F]): Unit = {
-        followTable.followRelation.put(s"${mainTable.name}_${folowTable.name}_uuid")
+    def oneToMany(mainTable: Table[_])(followTable: Table[_]): Unit = {
+        followTable.followRelation.put(s"`${mainTable.name}_${followTable.name}_uuid`".toLowerCase,mainTable.primary._2)
+        mainTable.mainRelation.put(s"${followTable.name}", s"`${mainTable.name}_${followTable.name}_uuid`".toLowerCase)
     }
 
     // unuseful method

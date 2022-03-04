@@ -27,23 +27,31 @@ object CreateImpl {
             }
         })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
 
+        val followRelationSQL =
+            if (!table.followRelation.isEmpty) {
+                "," + table.followRelation.map((name, tpe) => s"$name ${TypeMapping.scalaTypeMappingToSQLType(tpe)}").mkString(",")+"\n"
+            } else {
+                ""
+            }
         val indexedSQL =
             if (indexColumnList.length > 0) {
                 s"INDEX(${indexColumnList.mkString(",")})\n"
             } else {
                 ""
             }
+
         val sql = s"CREATE TABLE IF NOT EXISTS `${table.name}` (\n" +
             columnsSQL + "\n" +
+            followRelationSQL +
             indexedSQL +
             s");"
-        
+
         /*-----------------Logger--------------*/
-        
+
         Logger.logginSQL(sql)
-        
+
         /*-------------------------------------*/
-        
+
         ExecuteSQL.executeSQL(sql)
     }
 

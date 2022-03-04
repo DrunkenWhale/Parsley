@@ -9,6 +9,12 @@ import scala.reflect.ClassTag
 
 class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: ClassTag[T]) {
 
+    // name,type
+    private[parsley] lazy val primary: (String, String) = {
+        val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(Attribute.PrimaryKey)).head._1
+        (name,columnType(primaryKeyName))
+    }
+
     private[parsley] val clazz = clazzTag.runtimeClass
 
     // all columns name
@@ -28,7 +34,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     //
     //    }
 
-    // 被映射的字段 : 主表名 => 本身表中用于join的字段的名字
+    // 被映射的字段 : 本身表中用于join的字段的名字 => 主表主键的类型
     private[parsley] val followRelation: mutable.HashMap[String, String] =
         mutable.HashMap.empty
 
