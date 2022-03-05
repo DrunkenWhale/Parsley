@@ -17,7 +17,7 @@ import scala.reflect.ClassTag
 import scala.util.control.Breaks.break
 
 class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: ClassTag[T]) {
-
+    
     // name,type
     private[parsley] lazy val primary: (String, String) = {
         val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(DSL.primaryKey)).head._1
@@ -39,11 +39,11 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     private[parsley] val columnAttribute: mutable.HashMap[String, Seq[Attribute]] =
         mutable.HashMap.empty
 
-    private[parsley] val followingTables: mutable.ListBuffer[Table[_]] =
-        mutable.ListBuffer.empty
+    private[parsley] val followingTables: mutable.HashMap[Class[_], Table[_]] =
+        mutable.HashMap.empty
 
-    private[parsley] val followedTables: mutable.ListBuffer[Table[_]] =
-        mutable.ListBuffer.empty
+    private[parsley] val followedTables: mutable.HashMap[Class[_], Table[_]] =
+        mutable.HashMap.empty
 
     def create(): Unit = {
         createImpl(this)
@@ -95,7 +95,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
         val columnRelation = s"`${this.name}_${tb.name}`"
 
         val sql = s"INSERT INTO `${tb.name}` ($elementNameListString,$columnRelation) " +
-            s"VALUES (${List.fill(elementLength+1)("?").mkString(",")})"
+            s"VALUES (${List.fill(elementLength + 1)("?").mkString(",")})"
         /*-----------------Logger--------------*/
 
         Logger.logginSQL(sql)

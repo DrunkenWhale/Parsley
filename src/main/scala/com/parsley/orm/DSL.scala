@@ -11,8 +11,8 @@ object DSL {
 
     extension (mainTable: Table[_]) {
         def <==(followTable: Table[_]) = {
-            followTable.followingTables.append(mainTable)
-            mainTable.followedTables.append(followTable)
+            followTable.followingTables.put(mainTable.clazz, mainTable)
+            mainTable.followedTables.put(followTable.clazz, followTable)
         }
     }
 

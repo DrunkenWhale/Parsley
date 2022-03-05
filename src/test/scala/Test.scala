@@ -40,6 +40,7 @@ case class Book(name: String, age: Int)
         book.name is primaryKey
     ))
     students <== books
+    books <== students
     create(students)
     create(books)
     val student = Student("反射魔典", 514)

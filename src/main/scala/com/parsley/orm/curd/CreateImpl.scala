@@ -30,7 +30,9 @@ object CreateImpl {
 
         val followRelationSQL =
             if (!table.followingTables.isEmpty) {
-                "," + table.followingTables.map((t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primary._2)}").mkString(",") + "\n"
+                "," + table.followingTables.toList
+                    .map((_, t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primary._2)}")
+                    .mkString(",") + "\n"
             } else {
                 ""
             }
