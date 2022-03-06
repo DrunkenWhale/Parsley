@@ -2,6 +2,7 @@ package com.parsley.orm
 
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.orm.attribute.{AutoIncrement, Indexed, NotNull, PrimaryKey, Unique}
+import com.parsley.orm.curd.update.UpdateOperation
 
 import scala.reflect.ClassTag
 
@@ -22,37 +23,31 @@ object DSL {
 
 
     /*-------------------------------create------------------------------------------*/
-    
+
     export com.parsley.orm.curd.create.CreateImpl.is
     export com.parsley.orm.curd.create.CreateImpl.on
     export com.parsley.orm.curd.create.CreateImpl.declare
 
     /*-------------------------------insert-------------------------------------------*/
 
-//    export com.parsley.orm.curd.insert.InsertImpl.insert
-
     /*-------------------------------query--------------------------------------------*/
 
-//    export com.parsley.orm.curd.QueryImpl.query
-//    export com.parsley.orm.curd.QueryImpl.from
-
     /*-------------------------------update---------------------------------------------*/
-
-    export com.parsley.orm.curd.update.UpdateImpl.into
-    export com.parsley.orm.curd.update.UpdateImpl.update
-    export com.parsley.orm.curd.update.UpdateImpl.where
-    export UpdateOperation.==>
+    extension (self: String) {
+        def ==>(x: Int | Double | String | Long | Boolean | Float | Char): UpdateOperation = {
+            val res = new UpdateOperation
+            res.sqlString.append(s"`$self`='${x.toString}'")
+            res
+        }
+    }
 
     /*-------------------------------delete---------------------------------------------*/
-
-    export com.parsley.orm.curd.delete.DeleteImpl.delete
 
     /*-----------------------------condition-------------------------------------------*/
 
     export com.parsley.orm.Condition.===
     export com.parsley.orm.Condition.limit
     export com.parsley.orm.Condition.`*`
-
     /*-----------------------------attribute---------------------------------------------*/
 
     val primaryKey = new PrimaryKey()

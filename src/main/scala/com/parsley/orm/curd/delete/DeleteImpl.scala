@@ -5,7 +5,7 @@ import com.parsley.logger.Logger
 import com.parsley.orm.{Condition, Table}
 
 object DeleteImpl {
-    def delete(condition: Condition)(table: Table[_]): Unit = {
+    def deleteImpl(table: Table[_], condition: Condition): Unit = {
         val sql = s"DELETE FROM `${table.name}` $condition;"
         /*-----------------Logger--------------*/
 

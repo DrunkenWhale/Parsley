@@ -7,9 +7,11 @@ import com.parsley.orm.attribute.Attribute
 import com.parsley.orm.curd.create.CreateImpl.createImpl
 import com.parsley.orm.curd.query.QueryImpl.{queryImpl, queryRelationImpl}
 import com.parsley.orm.curd.insert.InsertImpl.{insertImpl, insertRelationImpl}
-import com.parsley.orm.curd.update.UpdateImpl.{into, where, update as updateImpl}
-import com.parsley.orm.curd.delete.DeleteImpl.delete as deleteImpl
+import com.parsley.orm.curd.update.UpdateImpl.updateImpl
+import com.parsley.orm.curd.delete.DeleteImpl.deleteImpl
 import com.parsley.orm.Condition.*
+import com.parsley.orm.curd.update.UpdateOperation
+
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -65,11 +67,11 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     }
 
     def update(updateOperation: UpdateOperation)(condition: Condition = Condition.*): Unit = {
-        updateImpl(updateOperation) where (condition) into this
+        updateImpl(this, updateOperation, condition)
     }
 
     def delete(condition: Condition): Unit = {
-        deleteImpl(condition)(this)
+        deleteImpl(this, condition)
     }
 
 }
