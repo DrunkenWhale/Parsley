@@ -1,7 +1,7 @@
 package com.parsley.connect.execute
 
 import com.parsley.connect.DataBaseManager
-import com.parsley.orm.DataToInstance.instanceFromParamSeq
+import com.parsley.orm.compile.DataToInstance.instanceFromParamSeq
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag

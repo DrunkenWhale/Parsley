@@ -1,36 +1,40 @@
-package com.parsley.orm.curd
+package com.parsley.orm.curd.create
 
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
-import com.parsley.orm.{DSL, DataToInstance, Table, TypeMapping}
 import com.parsley.orm.attribute.Attribute
+import com.parsley.orm.compile.DataToInstance
+import com.parsley.orm.{DSL, Table, TypeMapping}
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 object CreateImpl {
     /* create */
-    def create(table: Table[_]): Unit = {
+    def createImpl(table: Table[_]): Unit = {
 
         val indexColumnList = ListBuffer[String]()
-        val columnsSQL: String = table.columnType.map((name, tpe) => (s"`$name`", TypeMapping.scalaTypeMappingToSQLType(tpe), {
-            val opt = table.columnAttribute.get(name)
-            if (opt.isEmpty) {
-                ""
-            } else {
-                val seq = opt.get
-                if (seq.contains(DSL.indexed)) {
-                    indexColumnList.append(s"`$name`")
-                    seq.filter(x => x != DSL.indexed).map(x => x.sql).mkString(",")
+        val columnsSQL: String =
+            table.columnType.map((name, tpe) => (s"`$name`", TypeMapping.scalaTypeMappingToSQLType(tpe), {
+                val opt = table.columnAttribute.get(name)
+                if (opt.isEmpty) {
+                    ""
                 } else {
-                    seq.map(x => x.sql).mkString(",")
+                    val seq = opt.get
+                    if (seq.contains(DSL.indexed)) {
+                        indexColumnList.append(s"`$name`")
+                        seq.filter(x => x != DSL.indexed).map(x => x.sql).mkString(",")
+                    } else {
+                        seq.map(x => x.sql).mkString(",")
+                    }
                 }
-            }
-        })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
+            })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
 
         val followRelationSQL =
             if (!table.followingTables.isEmpty) {
-                "," + table.followingTables.map((t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primary._2)}").mkString(",") + "\n"
+                "," + table.followingTables.toList
+                    .map((_, t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primaryKeyType)}")
+                    .mkString(",") + "\n"
             } else {
                 ""
             }

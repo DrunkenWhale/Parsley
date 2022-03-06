@@ -4,22 +4,22 @@ import com.parsley.connect.DataBaseManager
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
 import com.parsley.orm.attribute.Attribute
-import com.parsley.orm.curd.CreateImpl.create as createImpl
-import com.parsley.orm.curd.QueryImpl.{from, query as queryImpl}
-import com.parsley.orm.curd.InsertImpl.{in, insert as insertImpl}
-import com.parsley.orm.curd.UpdateImpl.{into, where, update as updateImpl}
-import com.parsley.orm.curd.DeleteImpl.delete as deleteImpl
+import com.parsley.orm.curd.create.CreateImpl.createImpl
+import com.parsley.orm.curd.query.QueryImpl.{queryImpl, queryRelationImpl}
+import com.parsley.orm.curd.insert.InsertImpl.{insertImpl, insertRelationImpl}
+import com.parsley.orm.curd.update.UpdateImpl.updateImpl
+import com.parsley.orm.curd.delete.DeleteImpl.deleteImpl
 import com.parsley.orm.Condition.*
+import com.parsley.orm.curd.update.UpdateOperation
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
-import scala.util.control.Breaks.break
 
 class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: ClassTag[T]) {
 
     // name,type
-    private[parsley] lazy val primary: (String, String) = {
+    private[parsley] lazy val (primaryKeyName, primaryKeyType): (String, String) = {
         val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(DSL.primaryKey)).head._1
         (primaryKeyName, columnType(primaryKeyName))
     }
@@ -39,77 +39,39 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     private[parsley] val columnAttribute: mutable.HashMap[String, Seq[Attribute]] =
         mutable.HashMap.empty
 
-    private[parsley] val followingTables: mutable.ListBuffer[Table[_]] =
-        mutable.ListBuffer.empty
+    private[parsley] val followingTables: mutable.HashMap[Class[_], Table[_]] =
+        mutable.HashMap.empty
 
-    private[parsley] val followedTables: mutable.ListBuffer[Table[_]] =
-        mutable.ListBuffer.empty
+    private[parsley] val followedTables: mutable.HashMap[Class[_], Table[_]] =
+        mutable.HashMap.empty
+
 
     def create(): Unit = {
         createImpl(this)
     }
 
     def query(condition: Condition): List[T] = {
-        queryImpl(condition) from this
+        queryImpl[T](this, condition)
     }
 
-    def queryRelation[F <: Product](tb: Table[F])(x: T)(implicit clsTag: ClassTag[F]): List[F] = {
-        var value: Any = null
-        for (i <- 0 until x.productArity) {
-            if (x.productElementName(i) == this.primary._1) {
-                value = x.productElement(i)
-                // break
-                // this control syntax......
-                // ... must be changed
-            }
-        }
-        val followedTableJoinColumnName = s"${this.name}_${tb.name}"
-        val columnNameString = tb.columnName.map(x => s"`${tb.name}`.`$x`").mkString(",")
-        val sql =
-            s"SELECT $columnNameString" +
-                s" FROM `${tb.name}`" +
-                s" JOIN `${this.name}`" +
-                s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${this.name}`.`${primary._1}`" +
-                s" WHERE `${this.name}`.`${this.primary._1}`='$value';"
-        Logger.logginSQL(sql)
-        ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)
+    def queryRelation[F <: Product](x: T)(implicit clsTag: ClassTag[F]): List[F] = {
+        queryRelationImpl[T, F](this, x)
     }
 
     def insert(x: T): Unit = {
-        insertImpl(x) in this
+        insertImpl(this, x)
     }
 
-    def insertRelation[F <: Product](tb: Table[F])(x: T)(followInstance: F): Unit = {
-        val xElement = x.asInstanceOf[Tuple]
-        val xElementLength = xElement.productArity
-        val xElementNameValueSeq =
-            for (i <- 0 until xElementLength) yield (xElement.productElementName(i), xElement.productElement(i))
-        val relationColumnValue = xElementNameValueSeq.find((name, _) => name == this.primary._1).get._2
-        val element = followInstance.asInstanceOf[Tuple]
-        val elementLength = element.productArity
-        val elementNameValueSeq =
-            for (i <- 0 until elementLength) yield (element.productElementName(i), element.productElement(i))
-        val elementNameListString = elementNameValueSeq.map((name, _) => "`" + name + "`").mkString(",")
-        val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
-
-        val columnRelation = s"`${this.name}_${tb.name}`"
-
-        val sql = s"INSERT INTO `${tb.name}` ($elementNameListString,$columnRelation) " +
-            s"VALUES (${List.fill(elementLength+1)("?").mkString(",")})"
-        /*-----------------Logger--------------*/
-
-        Logger.logginSQL(sql)
-
-        /*-------------------------------------*/
-        ExecuteSQL.executeInsertSQL(sql, elementValueList.appended(relationColumnValue))
+    def insertRelation[F <: Product](x: T)(element: F)(implicit classTag: ClassTag[F]): Unit = {
+        insertRelationImpl(this, x, element)
     }
 
     def update(updateOperation: UpdateOperation)(condition: Condition = Condition.*): Unit = {
-        updateImpl(updateOperation) where (condition) into this
+        updateImpl(this, updateOperation, condition)
     }
 
     def delete(condition: Condition): Unit = {
-        deleteImpl(condition)(this)
+        deleteImpl(this, condition)
     }
 
 }

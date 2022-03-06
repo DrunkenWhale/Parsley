@@ -2,6 +2,7 @@ package com.parsley.orm
 
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.orm.attribute.{AutoIncrement, Indexed, NotNull, PrimaryKey, Unique}
+import com.parsley.orm.curd.update.UpdateOperation
 
 import scala.reflect.ClassTag
 
@@ -11,8 +12,8 @@ object DSL {
 
     extension (mainTable: Table[_]) {
         def <==(followTable: Table[_]) = {
-            followTable.followingTables.append(mainTable)
-            mainTable.followedTables.append(followTable)
+            followTable.followingTables.put(mainTable.clazz, mainTable)
+            mainTable.followedTables.put(followTable.clazz, followTable)
         }
     }
 
@@ -23,37 +24,25 @@ object DSL {
 
     /*-------------------------------create------------------------------------------*/
 
-    export com.parsley.orm.curd.CreateImpl.create
-    export com.parsley.orm.curd.CreateImpl.is
-    export com.parsley.orm.curd.CreateImpl.on
-    export com.parsley.orm.curd.CreateImpl.declare
+    export com.parsley.orm.curd.create.CreateImpl.is
+    export com.parsley.orm.curd.create.CreateImpl.on
+    export com.parsley.orm.curd.create.CreateImpl.declare
 
     /*-------------------------------insert-------------------------------------------*/
 
-    export com.parsley.orm.curd.InsertImpl.insert
-
     /*-------------------------------query--------------------------------------------*/
-
-    export com.parsley.orm.curd.QueryImpl.query
-    export com.parsley.orm.curd.QueryImpl.from
 
     /*-------------------------------update---------------------------------------------*/
 
-    export com.parsley.orm.curd.UpdateImpl.into
-    export com.parsley.orm.curd.UpdateImpl.update
-    export com.parsley.orm.curd.UpdateImpl.where
-    export UpdateOperation.==>
+    export com.parsley.orm.curd.update.UpdateOperation.==>
 
     /*-------------------------------delete---------------------------------------------*/
-
-    export com.parsley.orm.curd.DeleteImpl.delete
 
     /*-----------------------------condition-------------------------------------------*/
 
     export com.parsley.orm.Condition.===
     export com.parsley.orm.Condition.limit
     export com.parsley.orm.Condition.`*`
-
     /*-----------------------------attribute---------------------------------------------*/
 
     val primaryKey = new PrimaryKey()
