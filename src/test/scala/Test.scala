@@ -18,8 +18,9 @@ case class Person(name: String = "114514", age: Int) {
     on(persons)(person => declare(
         person.name is primaryKey
     ))
-    println((query(limit(114514)) from persons))
-    create(persons)
+//    println((query(limit(114514)) from persons))
+//    create(persons)
+
     val a = update("age" ==> 114514) into persons
     //    delete(*) in persons
 }
@@ -41,8 +42,10 @@ case class Book(name: String, age: Int)
     ))
     students <== books
     books <== students
-    create(students)
-    create(books)
+//    create(students)
+//    create(books)
+    students.create()
+
     val student = Student("反射魔典", 514)
 //    students.insert(student)
     val list = students.queryRelation[Book](student)

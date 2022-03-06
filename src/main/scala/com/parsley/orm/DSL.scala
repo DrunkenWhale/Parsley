@@ -22,31 +22,30 @@ object DSL {
 
 
     /*-------------------------------create------------------------------------------*/
-
-    export com.parsley.orm.curd.CreateImpl.create
-    export com.parsley.orm.curd.CreateImpl.is
-    export com.parsley.orm.curd.CreateImpl.on
-    export com.parsley.orm.curd.CreateImpl.declare
+    
+    export com.parsley.orm.curd.create.CreateImpl.is
+    export com.parsley.orm.curd.create.CreateImpl.on
+    export com.parsley.orm.curd.create.CreateImpl.declare
 
     /*-------------------------------insert-------------------------------------------*/
 
-    export com.parsley.orm.curd.InsertImpl.insert
+//    export com.parsley.orm.curd.insert.InsertImpl.insert
 
     /*-------------------------------query--------------------------------------------*/
 
-    export com.parsley.orm.curd.QueryImpl.query
-    export com.parsley.orm.curd.QueryImpl.from
+//    export com.parsley.orm.curd.QueryImpl.query
+//    export com.parsley.orm.curd.QueryImpl.from
 
     /*-------------------------------update---------------------------------------------*/
 
-    export com.parsley.orm.curd.UpdateImpl.into
-    export com.parsley.orm.curd.UpdateImpl.update
-    export com.parsley.orm.curd.UpdateImpl.where
+    export com.parsley.orm.curd.update.UpdateImpl.into
+    export com.parsley.orm.curd.update.UpdateImpl.update
+    export com.parsley.orm.curd.update.UpdateImpl.where
     export UpdateOperation.==>
 
     /*-------------------------------delete---------------------------------------------*/
 
-    export com.parsley.orm.curd.DeleteImpl.delete
+    export com.parsley.orm.curd.delete.DeleteImpl.delete
 
     /*-----------------------------condition-------------------------------------------*/
 

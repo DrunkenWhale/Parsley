@@ -1,4 +1,4 @@
-package com.parsley.orm.curd
+package com.parsley.orm.curd.delete
 
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
