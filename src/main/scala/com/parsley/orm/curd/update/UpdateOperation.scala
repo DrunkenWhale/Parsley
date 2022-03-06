@@ -15,7 +15,15 @@ class UpdateOperation {
 }
 
 object UpdateOperation {
-
+    
+    extension (self: String) {
+        def ==>(x: Int | Double | String | Long | Boolean | Float | Char): UpdateOperation = {
+            val res = new UpdateOperation
+            res.sqlString.append(s"`$self`='${x.toString}'")
+            res
+        }
+    }
+    
 }
 
 
