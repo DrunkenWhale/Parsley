@@ -1,4 +1,4 @@
-package com.parsley.orm
+package com.parsley.orm.compile
 
 import java.lang.reflect.Constructor
 import scala.reflect.ClassTag

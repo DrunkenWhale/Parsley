@@ -10,16 +10,16 @@ import com.parsley.orm.curd.InsertImpl.{in, insert as insertImpl}
 import com.parsley.orm.curd.UpdateImpl.{into, where, update as updateImpl}
 import com.parsley.orm.curd.DeleteImpl.delete as deleteImpl
 import com.parsley.orm.Condition.*
+import com.parsley.orm.Table.findFieldValueFromClassByName
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
-import scala.util.control.Breaks.break
 
 class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: ClassTag[T]) {
-    
+
     // name,type
-    private[parsley] lazy val primary: (String, String) = {
+    private[parsley] lazy val (primaryKeyName, primaryKeyType): (String, String) = {
         val primaryKeyName = columnAttribute.filter((name, attribute) => attribute.contains(DSL.primaryKey)).head._1
         (primaryKeyName, columnType(primaryKeyName))
     }
@@ -53,24 +53,17 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
         queryImpl(condition) from this
     }
 
-    def queryRelation[F <: Product](tb: Table[F])(x: T)(implicit clsTag: ClassTag[F]): List[F] = {
-        var value: Any = null
-        for (i <- 0 until x.productArity) {
-            if (x.productElementName(i) == this.primary._1) {
-                value = x.productElement(i)
-                // break
-                // this control syntax......
-                // ... must be changed
-            }
-        }
+    def queryRelation[F <: Product](x: T)(implicit clsTag: ClassTag[F]): List[F] = {
+        val tb = this.followedTables(clsTag.runtimeClass)
+        var value: Any = findFieldValueFromClassByName(x, this.primaryKeyName)
         val followedTableJoinColumnName = s"${this.name}_${tb.name}"
         val columnNameString = tb.columnName.map(x => s"`${tb.name}`.`$x`").mkString(",")
         val sql =
             s"SELECT $columnNameString" +
                 s" FROM `${tb.name}`" +
                 s" JOIN `${this.name}`" +
-                s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${this.name}`.`${primary._1}`" +
-                s" WHERE `${this.name}`.`${this.primary._1}`='$value';"
+                s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${this.name}`.`${this.primaryKeyName}`" +
+                s" WHERE `${this.name}`.`${this.primaryKeyName}`='$value';"
         Logger.logginSQL(sql)
         ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)
     }
@@ -79,17 +72,18 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
         insertImpl(x) in this
     }
 
-    def insertRelation[F <: Product](tb: Table[F])(x: T)(followInstance: F): Unit = {
-        val xElement = x.asInstanceOf[Tuple]
-        val xElementLength = xElement.productArity
-        val xElementNameValueSeq =
-            for (i <- 0 until xElementLength) yield (xElement.productElementName(i), xElement.productElement(i))
-        val relationColumnValue = xElementNameValueSeq.find((name, _) => name == this.primary._1).get._2
-        val element = followInstance.asInstanceOf[Tuple]
+    def insertRelation[F <: Product](x: T)(element: F)(implicit classTag: ClassTag[F]): Unit = {
+        val tb = this.followedTables(classTag.runtimeClass).asInstanceOf[Table[F]]
+
+        val relationColumnValue = findFieldValueFromClassByName(x, this.primaryKeyName)
+
         val elementLength = element.productArity
+
         val elementNameValueSeq =
             for (i <- 0 until elementLength) yield (element.productElementName(i), element.productElement(i))
+
         val elementNameListString = elementNameValueSeq.map((name, _) => "`" + name + "`").mkString(",")
+
         val elementValueList: IndexedSeq[Any] = elementNameValueSeq.map((_, value) => value)
 
         val columnRelation = s"`${this.name}_${tb.name}`"
@@ -130,5 +124,26 @@ protected object Table {
             }
         })
     }
+
+    /**
+     * foreach cls's fields
+     * get value from special field by field name
+     *
+     * @param: cls : class which you want to find fields value
+     * @param: name: field name
+     * @return: field's value, unknown type
+     * @throws: throw a exception when can't find field by name
+     *
+     * */
+    private def findFieldValueFromClassByName[F <: Product](cls: F, name: String): Any = {
+        val size = cls.productArity
+        for (i <- 0 to size) {
+            if (cls.productElementName(i) == name) {
+                return cls.productElement(i)
+            }
+        }
+        throw new Exception(s"can't find $name field from $cls")
+    }
+
 
 }

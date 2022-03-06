@@ -2,8 +2,9 @@ package com.parsley.orm.curd
 
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
-import com.parsley.orm.{DSL, DataToInstance, Table, TypeMapping}
+import com.parsley.orm.{DSL, Table, TypeMapping}
 import com.parsley.orm.attribute.Attribute
+import com.parsley.orm.compile.DataToInstance
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -31,7 +32,7 @@ object CreateImpl {
         val followRelationSQL =
             if (!table.followingTables.isEmpty) {
                 "," + table.followingTables.toList
-                    .map((_, t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primary._2)}")
+                    .map((_, t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primaryKeyType)}")
                     .mkString(",") + "\n"
             } else {
                 ""
