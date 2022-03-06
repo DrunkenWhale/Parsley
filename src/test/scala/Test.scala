@@ -27,9 +27,23 @@ case class Student(name: String, age: Int)
 case class Book(name: String, age: Int)
 
 @main def test2(): Unit = {
+
+    DataBase.students.create()
+    DataBase.books.create()
+
+    val student = Student("反射魔典", 514)
+    val book = Book("红茶",1145141919)
+    //    students.insert(student)
+//    DataBase.students.insertRelation(student)(book)
+//    DataBase.students.insert(student)
+    val list = DataBase.students.queryRelation[Book](student)
+    list.foreach(println)
+}
+
+object DataBase {
     DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
-    val students = table[Student]
     val books = table[Book]
+    val students = table[Student]
     on(students)(student => declare(
         student.name is primaryKey
     ))
@@ -37,20 +51,4 @@ case class Book(name: String, age: Int)
         book.name is primaryKey
     ))
     students <== books
-    books <== students
-//    create(students)
-//    create(books)
-    students.create()
-
-    val student = Student("反射魔典", 514)
-//    students.insert(student)
-    val list = students.queryRelation[Book](student)
-    list.foreach(println)
-}
-
-object DataBase {
-    val students = table[Student]
-    on(students)(student => declare(
-        student.name is primaryKey
-    ))
 }
