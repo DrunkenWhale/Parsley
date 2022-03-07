@@ -33,6 +33,7 @@ case class Book(name: String, age: Int)
 
     val student = Student("反射魔典", 514)
     val book = Book("红茶",1145141919)
+    DataBase.students.query("age"===114514 limit 1).foreach(println)
     //    students.insert(student)
 //    DataBase.students.insertRelation(student)(book)
 //    DataBase.students.insert(student)
@@ -43,13 +44,13 @@ case class Book(name: String, age: Int)
 
 object DataBase {
     DataBaseManager.register(MysqlConnection(database = "parsely", password = "3777777"))
-    val books = table[Book]
-    val students = table[Student]
-    on(students)(student => declare(
-        student.name is primaryKey
-    ))
-    on(books)(book => declare(
-        book.name is primaryKey
-    ))
-    students <== books
+        val books = table[Book]
+        val students = table[Student]
+        on(students)(student => declare(
+            student.name is primaryKey
+        ))
+        on(books)(book => declare(
+            book.name is primaryKey
+        ))
+        students <== books
 }

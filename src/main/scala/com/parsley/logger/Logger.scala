@@ -22,5 +22,4 @@ private[parsley] object Logger {
         , "\u001b[37m"
     )
 
-
 }
