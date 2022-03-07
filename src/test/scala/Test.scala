@@ -36,6 +36,7 @@ case class Book(name: String, age: Int)
     //    students.insert(student)
 //    DataBase.students.insertRelation(student)(book)
 //    DataBase.students.insert(student)
+    DataBase.books.query("name"==="下北泽").foreach(println)
     val list = DataBase.students.queryRelation[Book](student)
     list.foreach(println)
 }
