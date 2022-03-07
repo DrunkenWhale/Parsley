@@ -18,8 +18,8 @@ case class Person(name: String, age: Int)
 val persons = table[Person]
 
 on(persons)(person => declare(
-    person.name is PrimaryKey,
-    person.age is Indexed
+    person.name is primaryKey,
+    person.age is indexed
 ))
 
 create(persons)
