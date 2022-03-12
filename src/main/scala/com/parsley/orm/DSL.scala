@@ -8,46 +8,52 @@ import scala.reflect.ClassTag
 
 object DSL {
 
-    /*------------------------------table----------------------------------------------*/
+  /*------------------------------table----------------------------------------------*/
 
-    extension (mainTable: Table[_]) {
-        def <==(followTable: Table[_]) = {
-            followTable.followingTables.put(mainTable.clazz, mainTable)
-            mainTable.followedTables.put(followTable.clazz, followTable)
-        }
+  extension (mainTable: Table[_]) {
+    def <==(followTable: Table[_]) = {
+      followTable.followingTables.put(mainTable.clazz, mainTable)
+      mainTable.followedTables.put(followTable.clazz, followTable)
     }
 
-    def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
+    def <==>(relationTable: Table[_]) = {
+      relationTable.manyToManyTables.put(mainTable.clazz, mainTable)
+      mainTable.manyToManyTables.put(relationTable.clazz, relationTable)
+    }
 
-    def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
+  }
+
+  def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
+
+  def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
 
 
-    /*-------------------------------create------------------------------------------*/
+  /*-------------------------------create------------------------------------------*/
 
-    export com.parsley.orm.curd.create.CreateImpl.is
-    export com.parsley.orm.curd.create.CreateImpl.on
-    export com.parsley.orm.curd.create.CreateImpl.declare
+  export com.parsley.orm.curd.create.CreateImpl.is
+  export com.parsley.orm.curd.create.CreateImpl.on
+  export com.parsley.orm.curd.create.CreateImpl.declare
 
-    /*-------------------------------insert-------------------------------------------*/
+  /*-------------------------------insert-------------------------------------------*/
 
-    /*-------------------------------query--------------------------------------------*/
+  /*-------------------------------query--------------------------------------------*/
 
-    /*-------------------------------update---------------------------------------------*/
+  /*-------------------------------update---------------------------------------------*/
 
-    export com.parsley.orm.curd.update.UpdateOperation.==>
+  export com.parsley.orm.curd.update.UpdateOperation.==>
 
-    /*-------------------------------delete---------------------------------------------*/
+  /*-------------------------------delete---------------------------------------------*/
 
-    /*-----------------------------condition-------------------------------------------*/
+  /*-----------------------------condition-------------------------------------------*/
 
-    export com.parsley.orm.Condition.===
-    export com.parsley.orm.Condition.limit
-    export com.parsley.orm.Condition.`*`
-    /*-----------------------------attribute---------------------------------------------*/
+  export com.parsley.orm.Condition.===
+  export com.parsley.orm.Condition.limit
+  export com.parsley.orm.Condition.`*`
+  /*-----------------------------attribute---------------------------------------------*/
 
-    val primaryKey = new PrimaryKey()
-    val autoIncrement = new AutoIncrement()
-    val notNull = new NotNull()
-    val unique = new Unique()
-    val indexed = new Indexed()
+  val primaryKey = new PrimaryKey()
+  val autoIncrement = new AutoIncrement()
+  val notNull = new NotNull()
+  val unique = new Unique()
+  val indexed = new Indexed()
 }

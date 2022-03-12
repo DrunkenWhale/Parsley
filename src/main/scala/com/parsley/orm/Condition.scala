@@ -8,54 +8,54 @@ package com.parsley.orm
  * */
 class Condition {
 
-    private[parsley] val sqlString = new StringBuilder()
+  private[parsley] val sqlString = new StringBuilder()
 
-    override def toString: String = {
-        if (sqlString.isEmpty) {
-            ""
-        } else {
-            s"WHERE ${sqlString.result()}"
-        }
+  override def toString: String = {
+    if (sqlString.isEmpty) {
+      ""
+    } else {
+      s"WHERE ${sqlString.result()}"
     }
+  }
 
-    def and(condition: Condition): Condition = {
-        val res = new Condition()
-        res.sqlString.append(s"${this.sqlString.result()} AND ${condition.sqlString.result}")
-        res
-    }
+  def and(condition: Condition): Condition = {
+    val res = new Condition()
+    res.sqlString.append(s"${this.sqlString.result()} AND ${condition.sqlString.result}")
+    res
+  }
 
-    def or(condition: Condition): Condition = {
-        val res = new Condition()
-        res.sqlString.append(s"${this.sqlString.result} OR ${condition.sqlString.result()}")
-        res
-    }
+  def or(condition: Condition): Condition = {
+    val res = new Condition()
+    res.sqlString.append(s"${this.sqlString.result} OR ${condition.sqlString.result()}")
+    res
+  }
 
-    def limit(columnNumber: Int): Condition = {
-        val res = new Condition()
-        res.sqlString.append(s"${this.sqlString.result()} LIMIT $columnNumber")
-        res
-    }
+  def limit(columnNumber: Int): Condition = {
+    val res = new Condition()
+    res.sqlString.append(s"${this.sqlString.result()} LIMIT $columnNumber")
+    res
+  }
 
 }
 
 object Condition {
 
-    val * : Condition = new Condition()
+  val * : Condition = new Condition()
 
-    extension (self: String) {
-        def ===(x: Int | Double | String | Long | Boolean | Float | Char): Condition = {
-            val res = new Condition()
-            res.sqlString.append(s"`$self`='${x.toString}'")
-            res
-        }
+  extension (self: String) {
+    def ===(x: Int | Double | String | Long | Boolean | Float | Char): Condition = {
+      val res = new Condition()
+      res.sqlString.append(s"`$self`='${x.toString}'")
+      res
     }
+  }
 
-    def limit(number: Int): Condition = {
-        new Condition {
-            override def toString: String = {
-                s"LIMIT ${number}"
-            }
-        }
+  def limit(number: Int): Condition = {
+    new Condition {
+      override def toString: String = {
+        s"LIMIT ${number}"
+      }
     }
+  }
 
 }

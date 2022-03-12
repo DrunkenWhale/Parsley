@@ -7,19 +7,19 @@ import com.parsley.orm.{Condition, Table}
 object UpdateImpl {
 
 
-    def updateImpl(table: Table[_], updateOperation: UpdateOperation, condition: Condition): Unit = {
-        val conditionSQL = new Condition {
-            override def toString: String = {
-                this.sqlString.append(s"${updateOperation} ${condition.sqlString.result()}").result()
-            }
-        }
-        val sql = s"UPDATE `${table.name}` $conditionSQL;"
-        /*-----------------Logger--------------*/
-
-        Logger.logginSQL(sql)
-
-        /*-------------------------------------*/
-        ExecuteSQL.executeUpdateSQL(sql)
+  def updateImpl(table: Table[_], updateOperation: UpdateOperation, condition: Condition): Unit = {
+    val conditionSQL = new Condition {
+      override def toString: String = {
+        this.sqlString.append(s"${updateOperation} ${condition.sqlString.result()}").result()
+      }
     }
+    val sql = s"UPDATE `${table.name}` $conditionSQL;"
+    /*-----------------Logger--------------*/
+
+    Logger.logginSQL(sql)
+
+    /*-------------------------------------*/
+    ExecuteSQL.executeUpdateSQL(sql)
+  }
 
 }

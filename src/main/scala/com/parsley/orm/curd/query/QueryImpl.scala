@@ -14,35 +14,35 @@ import scala.reflect.ClassTag
  * */
 object QueryImpl {
 
-    def queryImpl[T <: Product](table: Table[_], condition: Condition)(implicit classTag: ClassTag[T]) = {
+  def queryImpl[T <: Product](table: Table[_], condition: Condition)(implicit classTag: ClassTag[T]) = {
 
-        val columnNameString = table.columnName.map(x => "`" + x + "`").mkString(",")
+    val columnNameString = table.columnName.map(x => "`" + x + "`").mkString(",")
 
-        val sql = s"SELECT $columnNameString FROM `${table.name}` ${condition}"
+    val sql = s"SELECT $columnNameString FROM `${table.name}` ${condition}"
 
-        /*-----------------Logger--------------*/
+    /*-----------------Logger--------------*/
 
-        Logger.logginSQL(sql)
+    Logger.logginSQL(sql)
 
-        /*-------------------------------------*/
+    /*-------------------------------------*/
 
-        ExecuteSQL.executeQuerySQL[T](sql, table.columnType)
+    ExecuteSQL.executeQuerySQL[T](sql, table.columnType)
 
-    }
+  }
 
-    def queryRelationImpl[T <: Product, F <: Product](table: Table[T], x: T)(implicit clsTag: ClassTag[F]): List[F] = {
-        val tb = table.followedTables(clsTag.runtimeClass)
-        var value: Any = CRUDUtil.findFieldValueFromClassByName(x, table.primaryKeyName)
-        val followedTableJoinColumnName = s"${table.name}_${tb.name}"
-        val columnNameString = tb.columnName.map(x => s"`${tb.name}`.`$x`").mkString(",")
-        val sql =
-            s"SELECT $columnNameString" +
-                s" FROM `${tb.name}`" +
-                s" JOIN `${table.name}`" +
-                s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${table.name}`.`${table.primaryKeyName}`" +
-                s" WHERE `${table.name}`.`${table.primaryKeyName}`='$value';"
-        Logger.logginSQL(sql)
-        ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)
-    }
+  def queryRelationImpl[T <: Product, F <: Product](table: Table[T], x: T)(implicit clsTag: ClassTag[F]): List[F] = {
+    val tb = table.followedTables(clsTag.runtimeClass)
+    var value: Any = CRUDUtil.findFieldValueFromClassByName(x, table.primaryKeyName)
+    val followedTableJoinColumnName = s"${table.name}_${tb.name}"
+    val columnNameString = tb.columnName.map(x => s"`${tb.name}`.`$x`").mkString(",")
+    val sql =
+      s"SELECT $columnNameString" +
+          s" FROM `${tb.name}`" +
+          s" JOIN `${table.name}`" +
+          s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${table.name}`.`${table.primaryKeyName}`" +
+          s" WHERE `${table.name}`.`${table.primaryKeyName}`='$value';"
+    Logger.logginSQL(sql)
+    ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)
+  }
 
 }

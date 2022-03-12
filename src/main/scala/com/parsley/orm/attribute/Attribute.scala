@@ -12,13 +12,13 @@ package com.parsley.orm.attribute
  * */
 
 trait Attribute {
-    private[parsley] val code: Int // unique indentify
+  private[parsley] val code: Int // unique indentify
 
-    private[parsley] def sql: String
+  private[parsley] def sql: String
 
-    private[parsley] def unapply(arg: Attribute): Int = code
+  private[parsley] def unapply(arg: Attribute): Int = code
 
-    override def toString: String = sql
+  override def toString: String = sql
 }
 
 

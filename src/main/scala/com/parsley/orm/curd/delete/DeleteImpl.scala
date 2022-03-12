@@ -5,13 +5,13 @@ import com.parsley.logger.Logger
 import com.parsley.orm.{Condition, Table}
 
 object DeleteImpl {
-    def deleteImpl(table: Table[_], condition: Condition): Unit = {
-        val sql = s"DELETE FROM `${table.name}` $condition;"
-        /*-----------------Logger--------------*/
+  def deleteImpl(table: Table[_], condition: Condition): Unit = {
+    val sql = s"DELETE FROM `${table.name}` $condition;"
+    /*-----------------Logger--------------*/
 
-        Logger.logginSQL(sql)
+    Logger.logginSQL(sql)
 
-        /*-------------------------------------*/
-        ExecuteSQL.executeSQL(sql)
-    }
+    /*-------------------------------------*/
+    ExecuteSQL.executeSQL(sql)
+  }
 }
