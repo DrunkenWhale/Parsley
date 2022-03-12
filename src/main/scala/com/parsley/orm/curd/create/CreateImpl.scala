@@ -45,19 +45,40 @@ object CreateImpl {
         ""
       }
 
-    val sql = s"CREATE TABLE IF NOT EXISTS `${table.name}` (\n" +
+
+    val sql = "\n" + s"CREATE TABLE IF NOT EXISTS `${table.name}` (\n" +
         columnsSQL + "\n" +
         followRelationSQL +
         indexedSQL +
         s");"
 
+    val relationTableCreateSQL = if (table.manyToManyTables.nonEmpty) {
+      table.manyToManyTables.map((clazz, relationTable) => {
+        val relationTableName = if (relationTable.name > table.name) {
+          s"${relationTable.name}_${table.name}"
+        } else {
+          s"${table.name}_${relationTable.name}"
+        }
+        "\n\n" + s"CREATE TABLE IF NOT EXISTS `$relationTableName`(\n" +
+            s"`id` INT PRIMARY KEY,\n" +
+            s"`${table.name}` ${TypeMapping.scalaTypeMappingToSQLType(table.primaryKeyType)},\n" +
+            s"`${relationTable.name}` ${TypeMapping.scalaTypeMappingToSQLType(relationTable.primaryKeyType)}\n" +
+            s");\n"
+      }).mkString
+    } else {
+      ""
+    }
+
+
     /*-----------------Logger--------------*/
 
     Logger.logginSQL(sql)
+    Logger.logginSQL(relationTableCreateSQL)
 
     /*-------------------------------------*/
 
     ExecuteSQL.executeSQL(sql)
+    ExecuteSQL.executeSQL(relationTableCreateSQL)
   }
 
   def declare(columnNameWithAttribute: (String, Seq[Attribute])*): Seq[(String, Seq[Attribute])] = {

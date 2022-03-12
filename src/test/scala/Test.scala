@@ -39,6 +39,10 @@ case class Book(name: String, age: Int)
     list.foreach(println)
 }
 
+@main def test3(): Unit ={
+
+}
+
 object DataBase {
     DataBaseManager.register(MysqlConnection(database = "parsley", password = "3777777"))
         val books: Table[Book] = table[Book]
@@ -50,5 +54,5 @@ object DataBase {
             book.name is primaryKey
         ))
         // create One(student)ToMany(book)relation between two tables
-        students <== books
+        students <==> books
 }
