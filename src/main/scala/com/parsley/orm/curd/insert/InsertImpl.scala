@@ -26,6 +26,11 @@ object InsertImpl {
 
   }
 
+  def relatedManyToManyImpl[T <: Product, F <: Product](table: Table[T], x: T, element: F)(implicit classTag: ClassTag[F]): Unit ={
+    val relationTableName = ???
+    val sqlTemplate = s"INSERT INTO "
+  }
+
   def insertRelationImpl[T <: Product, F <: Product](table: Table[T], x: T, element: F)(implicit classTag: ClassTag[F]): Unit = {
     val tb = table.followedTables(classTag.runtimeClass).asInstanceOf[Table[F]]
 

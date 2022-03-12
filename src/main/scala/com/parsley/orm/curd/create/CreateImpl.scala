@@ -59,7 +59,7 @@ object CreateImpl {
         } else {
           s"${table.name}_${relationTable.name}"
         }
-        "\n\n" + s"CREATE TABLE IF NOT EXISTS `$relationTableName`(\n" +
+        "\n" + s"CREATE TABLE IF NOT EXISTS `$relationTableName`(\n" +
             s"`id` INT PRIMARY KEY,\n" +
             s"`${table.name}` ${TypeMapping.scalaTypeMappingToSQLType(table.primaryKeyType)},\n" +
             s"`${relationTable.name}` ${TypeMapping.scalaTypeMappingToSQLType(relationTable.primaryKeyType)}\n" +
