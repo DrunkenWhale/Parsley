@@ -31,7 +31,7 @@ object CreateImpl {
             })).map((name, tpe, attributes) => s"$name $tpe $attributes").mkString(",\n")
 
         val followRelationSQL =
-            if (!table.followingTables.isEmpty) {
+            if (table.followingTables.nonEmpty) {
                 "," + table.followingTables.toList
                     .map((_, t) => s"`${t.name + "_" + table.name}` ${TypeMapping.scalaTypeMappingToSQLType(t.primaryKeyType)}")
                     .mkString(",") + "\n"
@@ -39,7 +39,7 @@ object CreateImpl {
                 ""
             }
         val indexedSQL =
-            if (indexColumnList.length > 0) {
+            if (indexColumnList.nonEmpty) {
                 s"INDEX(${indexColumnList.mkString(",")})\n"
             } else {
                 ""

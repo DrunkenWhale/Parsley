@@ -8,3 +8,8 @@ libraryDependencies ++= Seq(
     "mysql" % "mysql-connector-java" % "8.0.25",
     "com.lihaoyi" %% "sourcecode" % "0.2.8"
 )
+
+lazy val Parsley = (project in file("."))
+    .settings(
+        name := "Parsley"
+    )
