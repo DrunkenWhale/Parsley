@@ -58,7 +58,7 @@ object QueryImpl {
       s"SELECT $columnNameString" +
           s" FROM `${tb.name}`" +
           s" JOIN `${table.name}`" +
-          s" ON `${tb.name}`.`${followedTableJoinColumnName}`=`${table.name}`.`${table.primaryKeyName}`" +
+          s" ON `${tb.name}`.`$followedTableJoinColumnName`=`${table.name}`.`${table.primaryKeyName}`" +
           s" WHERE `${table.name}`.`${table.primaryKeyName}`='$value';"
     Logger.logginSQL(sql)
     ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)

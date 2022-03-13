@@ -49,6 +49,14 @@ case class Book(name: String, age: Int)
   DataBase.students.insert(student)
 }
 
+@main def test4(): Unit ={
+  val student = Student("反射魔典", 514)
+  val book = Book("红茶", 1145141919)
+  DataBase.books.create()
+  DataBase.students.create()
+  println(DataBase.students.queryManyToManyRelation[Book](student))
+}
+
 object DataBase {
   DataBaseManager.register(MysqlConnection(database = "parsley", password = "3777777"))
   val books: Table[Book] = table[Book]
