@@ -159,8 +159,31 @@ you will get all columns which is related to instance `student`
 
 ### ManyToMany
 
-...
+#### Create
+  
+```scala
 
-Future
+students <==> books
 
-~~Elden Ring！~~
+```
+  
+### Insert
+  
+```scala
+
+students.relatedManyToMany(student)(book)
+
+```
+  
+create a ManyToMany RelationShip between instance `student` and `book`
+  
+### query
+
+```scala
+
+students.queryManyToManyRelation[Book](student)
+
+```
+
+get a List[Book] have all instance related to this `student` instance
+

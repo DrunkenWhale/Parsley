@@ -47,14 +47,9 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
 
   private[parsley] val manyToManyTables: mutable.HashMap[Class[_], Table[_]] =
     mutable.HashMap.empty
-
-
+  
   def create(): Unit = {
     createImpl(this)
-  }
-
-  def relatedManyToMany[F <: Product](x1: T)(x2: F)(implicit classTag: ClassTag[F]): Unit = {
-    relatedManyToManyImpl(this, x1, x2)
   }
 
   def query(condition: Condition): List[T] = {
@@ -71,6 +66,10 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
 
   def insertRelation[F <: Product](x: T)(element: F)(implicit classTag: ClassTag[F]): Unit = {
     insertRelationImpl(this, x, element)
+  }
+
+  def relatedManyToMany[F <: Product](x1: T)(x2: F)(implicit classTag: ClassTag[F]): Unit = {
+    relatedManyToManyImpl(this, x1, x2)
   }
 
   def update(updateOperation: UpdateOperation)(condition: Condition = Condition.*): Unit = {
