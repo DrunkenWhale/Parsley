@@ -4,6 +4,7 @@ import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
 import com.parsley.orm.attribute.Attribute
 import com.parsley.orm.compile.DataToInstance
+import com.parsley.orm.curd.util.CRUDUtil
 import com.parsley.orm.{DSL, Table, TypeMapping}
 
 import scala.collection.mutable.ListBuffer
@@ -54,13 +55,9 @@ object CreateImpl {
 
     val relationTableCreateSQL = if (table.manyToManyTables.nonEmpty) {
       table.manyToManyTables.map((clazz, relationTable) => {
-        val relationTableName = if (relationTable.name > table.name) {
-          s"${relationTable.name}_${table.name}"
-        } else {
-          s"${table.name}_${relationTable.name}"
-        }
+        val relationTableName = CRUDUtil.getRelationTableName(relationTable.name, table.name)
         "\n" + s"CREATE TABLE IF NOT EXISTS `$relationTableName`(\n" +
-            s"`id` INT PRIMARY KEY,\n" +
+            s"`id` INT PRIMARY KEY AUTO_INCREMENT,\n" +
             s"`${table.name}` ${TypeMapping.scalaTypeMappingToSQLType(table.primaryKeyType)},\n" +
             s"`${relationTable.name}` ${TypeMapping.scalaTypeMappingToSQLType(relationTable.primaryKeyType)}\n" +
             s");\n"

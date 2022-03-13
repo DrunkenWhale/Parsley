@@ -3,7 +3,9 @@ package com.parsley.orm.curd.insert
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
 import com.parsley.orm.Table
+import com.parsley.orm.curd.util
 import com.parsley.orm.curd.util.CRUDUtil
+
 import scala.reflect.ClassTag
 
 object InsertImpl {
@@ -26,9 +28,20 @@ object InsertImpl {
 
   }
 
-  def relatedManyToManyImpl[T <: Product, F <: Product](table: Table[T], x: T, element: F)(implicit classTag: ClassTag[F]): Unit ={
-    val relationTableName = ???
-    val sqlTemplate = s"INSERT INTO "
+  def relatedManyToManyImpl[T <: Product, F <: Product](table: Table[T], x: T, element: F)(implicit classTag: ClassTag[F]): Unit = {
+    val relationTable = table.manyToManyTables(classTag.runtimeClass) // will throw NullPointerException
+    val relationTableName = CRUDUtil.getRelationTableName(relationTable.name, table.name)
+    val primaryKeyName1 = table.primaryKeyName
+    val primaryKeyName2 = relationTable.primaryKeyName
+    val sql = s"INSERT INTO `${relationTableName}` (`$primaryKeyName1`,`$primaryKeyName2`) VALUES (?, ?)"
+    val primaryKeyValue1 = util.CRUDUtil.findFieldValueFromClassByName(element, table.primaryKeyName)
+    val primaryKeyValue2 = util.CRUDUtil.findFieldValueFromClassByName(element, relationTable.primaryKeyName)
+    /*-----------------Logger--------------*/
+
+    Logger.logginSQL(sql)
+
+    /*-------------------------------------*/
+    ExecuteSQL.executeInsertSQL(sql, Seq(primaryKeyValue1, primaryKeyValue2))
   }
 
   def insertRelationImpl[T <: Product, F <: Product](table: Table[T], x: T, element: F)(implicit classTag: ClassTag[F]): Unit = {
@@ -57,5 +70,6 @@ object InsertImpl {
     ExecuteSQL.executeInsertSQL(sql, elementValueList.appended(relationColumnValue))
 
   }
+
 
 }
