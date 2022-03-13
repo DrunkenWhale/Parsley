@@ -31,10 +31,10 @@ object InsertImpl {
   def relatedManyToManyImpl[T <: Product, F <: Product](table: Table[T], x: T, element: F)(implicit classTag: ClassTag[F]): Unit = {
     val relationTable = table.manyToManyTables(classTag.runtimeClass) // will throw NullPointerException
     val relationTableName = CRUDUtil.getRelationTableName(relationTable.name, table.name)
+    val sql = s"INSERT INTO `${relationTableName}` (`${table.name}`,`${relationTable.name}`) VALUES (?, ?)"
     val primaryKeyName1 = table.primaryKeyName
     val primaryKeyName2 = relationTable.primaryKeyName
-    val sql = s"INSERT INTO `${relationTableName}` (`$primaryKeyName1`,`$primaryKeyName2`) VALUES (?, ?)"
-    val primaryKeyValue1 = util.CRUDUtil.findFieldValueFromClassByName(element, table.primaryKeyName)
+    val primaryKeyValue1 = util.CRUDUtil.findFieldValueFromClassByName(x, table.primaryKeyName)
     val primaryKeyValue2 = util.CRUDUtil.findFieldValueFromClassByName(element, relationTable.primaryKeyName)
     /*-----------------Logger--------------*/
 

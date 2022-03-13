@@ -5,8 +5,8 @@ import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
 import com.parsley.orm.attribute.Attribute
 import com.parsley.orm.curd.create.CreateImpl.createImpl
-import com.parsley.orm.curd.query.QueryImpl.{queryImpl, queryRelationImpl}
-import com.parsley.orm.curd.insert.InsertImpl.{insertImpl, insertRelationImpl}
+import com.parsley.orm.curd.query.QueryImpl.{queryImpl, queryManyToManyImpl, queryRelationImpl}
+import com.parsley.orm.curd.insert.InsertImpl.{insertImpl, insertRelationImpl, relatedManyToManyImpl}
 import com.parsley.orm.curd.update.UpdateImpl.updateImpl
 import com.parsley.orm.curd.delete.DeleteImpl.deleteImpl
 import com.parsley.orm.Condition.*
@@ -53,6 +53,10 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     createImpl(this)
   }
 
+  def relatedManyToMany[F <: Product](x1: T)(x2: F)(implicit classTag: ClassTag[F]): Unit = {
+    relatedManyToManyImpl(this, x1, x2)
+  }
+
   def query(condition: Condition): List[T] = {
     queryImpl[T](this, condition)
   }
@@ -75,6 +79,11 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
 
   def delete(condition: Condition): Unit = {
     deleteImpl(this, condition)
+  }
+
+
+  def queryManyToManyRelation[F <: Product](x: T)(implicit classTag: ClassTag[F]): List[F] = {
+    queryManyToManyImpl[T, F](this, x)
   }
 
 }
