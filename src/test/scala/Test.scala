@@ -1,5 +1,5 @@
 import com.parsley.connect.DataBaseManager
-import com.parsley.connect.connection.MysqlConnection
+import com.parsley.connect.connection.{MysqlConnection, SqliteConnection}
 
 import scala.util.Random
 import com.parsley.orm.DSL.*

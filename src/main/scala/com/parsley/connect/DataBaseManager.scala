@@ -1,6 +1,6 @@
 package com.parsley.connect
 
-import com.parsley.connect.connection.{DataBaseConnection, MysqlConnection}
+import com.parsley.connect.connection.{DataBaseConnection, MysqlConnection, SqliteConnection}
 
 import java.sql.{Connection, DriverManager, Statement}
 
@@ -13,19 +13,23 @@ protected class DataBaseManager(databaseConnection: DataBaseConnection) {
       Class.forName("com.mysql.cj.jdbc.Driver")
       val connectURL = s"jdbc:mysql://${mysqlConnection.address}:${mysqlConnection.port}/${mysqlConnection.database}"
       DriverManager.getConnection(connectURL, mysqlConnection.user, mysqlConnection.password)
+
+    case sqliteConnection:SqliteConnection =>
+      Class.forName("org.sqlite.JDBC")
+      DriverManager.getConnection(s"jdbc:sqlite:${sqliteConnection.url}")
   }
 
 }
 
 object DataBaseManager {
 
-  def register(databaseConnection: DataBaseConnection) = {
+  def register(databaseConnection: DataBaseConnection): Unit = {
     this.dataBaseManager = new DataBaseManager(databaseConnection)
   }
 
   // singleton instance
   // not thread safe
-  private var dataBaseManager: DataBaseManager = null
+  private var dataBaseManager: DataBaseManager = _
 
 
   private[parsley] def preparedStatement(sql: String) = this.dataBaseManager.connection.prepareStatement(sql)
