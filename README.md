@@ -2,6 +2,19 @@
 
 Delicate Orm，All basic function are .... not be implemented
 
+## Connect
+
+```scala
+
+import com.parsley.connect.DataBaseManager
+import com.parsley.connect.connection.MysqlConnection
+
+DataBaseManager.register(
+  MysqlConnection(database = "DatabaseName", password = "password")
+)
+
+```
+
 ## CURD
 
 ### Create
