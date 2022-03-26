@@ -49,12 +49,23 @@ case class Book(name: String, age: Int)
   DataBase.students.insert(student)
 }
 
-@main def test4(): Unit ={
+@main def test4(): Unit = {
   val student = Student("反射魔典", 514)
   val book = Book("红茶", 1145141919)
   DataBase.books.create()
   DataBase.students.create()
   println(DataBase.students.queryManyToManyRelation[Book](student))
+}
+
+@main def test5(): Unit = {
+  def getNameToValueSeqFromCaseClass[T <: Product](x: T): Seq[(String, Any)] = {
+    val elementTuple = x.asInstanceOf[Tuple]
+    val elementLength = elementTuple.productArity
+    for (i <- 0 until elementLength) yield (elementTuple.productElementName(i), elementTuple.productElement(i))
+  }
+
+  case class ASC(name: String, value: Int, age: Long)
+  println(getNameToValueSeqFromCaseClass(ASC("野兽前辈", 114, 514)))
 }
 
 object DataBase {

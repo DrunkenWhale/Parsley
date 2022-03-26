@@ -8,9 +8,10 @@ import scala.reflect.ClassTag
 
 object DSL {
 
-  /*------------------------------table----------------------------------------------*/
+  /*------------------------------build relation----------------------------------------------*/
 
   extension (mainTable: Table[_]) {
+    
     def <==(followTable: Table[_]) = {
       followTable.followingTables.put(mainTable.clazz, mainTable)
       mainTable.followedTables.put(followTable.clazz, followTable)
@@ -23,9 +24,10 @@ object DSL {
 
   }
 
-  def table[T <: Product](implicit classTag: ClassTag[T]) = Table.apply[T]
+  /*--------------------------------table-------------------------------------------*/
+  def table[T <: Product](implicit classTag: ClassTag[T]): Table[T] = Table.apply[T]
 
-  def table[T <: Product](name: String)(implicit classTag: ClassTag[T]) = Table.apply[T](name)
+  def table[T <: Product](name: String)(implicit classTag: ClassTag[T]): Table[T] = Table.apply[T](name)
 
 
   /*-------------------------------create------------------------------------------*/

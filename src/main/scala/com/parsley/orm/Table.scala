@@ -47,7 +47,7 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
 
   private[parsley] val manyToManyTables: mutable.HashMap[Class[_], Table[_]] =
     mutable.HashMap.empty
-  
+
   def create(): Unit = {
     createImpl(this)
   }
@@ -56,20 +56,8 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     queryImpl[T](this, condition)
   }
 
-  def queryRelation[F <: Product](x: T)(implicit clsTag: ClassTag[F]): List[F] = {
-    queryRelationImpl[T, F](this, x)
-  }
-
   def insert(x: T): Unit = {
     insertImpl(this, x)
-  }
-
-  def insertRelation[F <: Product](x: T)(element: F)(implicit classTag: ClassTag[F]): Unit = {
-    insertRelationImpl(this, x, element)
-  }
-
-  def relatedManyToMany[F <: Product](x1: T)(x2: F)(implicit classTag: ClassTag[F]): Unit = {
-    relatedManyToManyImpl(this, x1, x2)
   }
 
   def update(updateOperation: UpdateOperation)(condition: Condition = Condition.*): Unit = {
@@ -80,6 +68,17 @@ class Table[T <: Product](private[parsley] val name: String)(implicit clazzTag: 
     deleteImpl(this, condition)
   }
 
+  def queryRelation[F <: Product](x: T)(implicit clsTag: ClassTag[F]): List[F] = {
+    queryRelationImpl[T, F](this, x)
+  }
+
+  def insertRelation[F <: Product](x: T)(element: F)(implicit classTag: ClassTag[F]): Unit = {
+    insertRelationImpl(this, x, element)
+  }
+
+  def relatedManyToMany[F <: Product](x1: T)(x2: F)(implicit classTag: ClassTag[F]): Unit = {
+    relatedManyToManyImpl(this, x1, x2)
+  }
 
   def queryManyToManyRelation[F <: Product](x: T)(implicit classTag: ClassTag[F]): List[F] = {
     queryManyToManyImpl[T, F](this, x)

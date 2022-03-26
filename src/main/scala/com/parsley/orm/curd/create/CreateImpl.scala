@@ -3,8 +3,7 @@ package com.parsley.orm.curd.create
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
 import com.parsley.orm.attribute.Attribute
-import com.parsley.orm.compile.DataToInstance
-import com.parsley.orm.curd.util.CRUDUtil
+import com.parsley.orm.util.{Util, CollectionToInstance}
 import com.parsley.orm.{DSL, Table, TypeMapping}
 
 import scala.collection.mutable.ListBuffer
@@ -55,7 +54,7 @@ object CreateImpl {
 
     val relationTableCreateSQL = if (table.manyToManyTables.nonEmpty) {
       table.manyToManyTables.map((clazz, relationTable) => {
-        val relationTableName = CRUDUtil.getRelationTableName(relationTable.name, table.name)
+        val relationTableName = Util.getRelationTableName(relationTable.name, table.name)
         "\n" + s"CREATE TABLE IF NOT EXISTS `$relationTableName`(\n" +
             s"`id` INT PRIMARY KEY AUTO_INCREMENT,\n" +
             s"`${table.name}` ${TypeMapping.scalaTypeMappingToSQLType(table.primaryKeyType)},\n" +
@@ -88,7 +87,7 @@ object CreateImpl {
   def on[T <: Product](table: Table[T])
                       (operation: (T => Seq[(String, Seq[Attribute])]))
                       (implicit classTag: ClassTag[T]): Unit = {
-    val nameWithAttributeSeq = operation(DataToInstance.instanceFromFakeParamSeq[T])
+    val nameWithAttributeSeq = operation(CollectionToInstance.instanceFromFakeParamSeq[T])
     //change table's map
     Table.putAttribute(table)(nameWithAttributeSeq)
   }

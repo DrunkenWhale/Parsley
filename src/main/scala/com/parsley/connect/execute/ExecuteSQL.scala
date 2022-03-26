@@ -1,7 +1,8 @@
 package com.parsley.connect.execute
 
 import com.parsley.connect.DataBaseManager
-import com.parsley.orm.compile.DataToInstance.instanceFromParamSeq
+import com.parsley.orm.util.CollectionToInstance
+
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
@@ -29,13 +30,13 @@ private[parsley] object ExecuteSQL {
         case "boolean" => resultSet.getBoolean(name)
         case "char" => resultSet.getByte(name)
       })
-      res.append(instanceFromParamSeq[T](valueSeq))
+      res.append(CollectionToInstance.instanceFromParamSeq[T](valueSeq))
     }
     res.toList
   }
 
   // use in insert method
-  private[parsley] def executeInsertSQL(sql: String, seq:Seq[Any]): Unit = {
+  private[parsley] def executeInsertSQL(sql: String, seq: Seq[Any]): Unit = {
     val statement = DataBaseManager.preparedStatement(sql)
     seq.zipWithIndex.foreach((x, index) => { // why type become value class...
       x.getClass.getSimpleName match {

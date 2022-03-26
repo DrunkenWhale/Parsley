@@ -1,6 +1,6 @@
-package com.parsley.orm.curd.util
+package com.parsley.orm.util
 
-private[parsley] object CRUDUtil {
+private[parsley] object Util {
   /**
    * foreach cls's fields
    * get value from special field by field name
@@ -19,6 +19,23 @@ private[parsley] object CRUDUtil {
       }
     }
     throw new Exception(s"can't find $name field from $cls")
+  }
+
+
+  /**
+   * @param x => must be a case class 
+   * @tparam T x's type
+   * @return a tuple seq,the first element in tuple is field name,and second element in tuple is field's value
+   *         for example:
+   *          case class Java(big:Boolean, boringLevel:Long)
+   *          val java = Java(True, 114514)
+   *          println(getNameValueSeqFromCaseClass(java))
+   *          // print Vector((big,True),(boringLevel,114514))
+   */
+  def getNameValueSeqFromCaseClass[T <: Product](x: T): Seq[(String, Any)] = {
+    val elementTuple = x.asInstanceOf[Tuple]
+    val elementLength = elementTuple.productArity
+    for (i <- 0 until elementLength) yield (elementTuple.productElementName(i), elementTuple.productElement(i))
   }
 
 
