@@ -5,8 +5,12 @@ import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.logger.Logger
 import com.parsley.orm.attribute.Attribute
 import com.parsley.orm.curd.create.CreateImpl.createImpl
-import com.parsley.orm.curd.query.QueryImpl.{queryImpl, queryManyToManyImpl, queryRelationImpl}
-import com.parsley.orm.curd.insert.InsertImpl.{insertImpl, insertRelationImpl, relatedManyToManyImpl}
+import com.parsley.orm.curd.query.QueryImpl.queryImpl
+import com.parsley.orm.curd.query.QueryRelationImpl.queryRelationImpl
+import com.parsley.orm.curd.query.QueryManyToManyRelationImpl.queryManyToManyImpl
+import com.parsley.orm.curd.insert.InsertImpl.insertImpl
+import com.parsley.orm.curd.insert.InsertRelationImpl.insertRelationImpl
+import com.parsley.orm.curd.insert.InsertManyToManyRelationImpl.relatedManyToManyImpl
 import com.parsley.orm.curd.update.UpdateImpl.updateImpl
 import com.parsley.orm.curd.delete.DeleteImpl.deleteImpl
 import com.parsley.orm.Condition.*

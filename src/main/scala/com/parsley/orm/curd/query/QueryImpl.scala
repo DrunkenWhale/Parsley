@@ -29,39 +29,5 @@ object QueryImpl {
     ExecuteSQL.executeQuerySQL[T](sql, table.columnType)
 
   }
-
-  def queryManyToManyImpl[T <: Product, F <: Product](table: Table[T], x: T)(implicit clsTag: ClassTag[F], tag: ClassTag[T]): List[F] = {
-    val relationTable = table.manyToManyTables(clsTag.runtimeClass)
-    val manyToManyRelationTableName = Util.getRelationTableName(table.name, relationTable.name)
-    val sql = s"SELECT * FROM ${relationTable.name} " +
-        s"WHERE ${table.primaryKeyName} IN " +
-        s"(SELECT DISTINCT ${relationTable.name} " +
-        s"FROM ${manyToManyRelationTableName} " +
-        s"WHERE ${table.name}='${Util.findFieldValueFromClassByName(x, table.primaryKeyName)}');"
-
-    /*-----------------Logger--------------*/
-
-    Logger.logginSQL(sql)
-
-    /*-------------------------------------*/
-
-    ExecuteSQL.executeQuerySQL[F](sql, relationTable.columnType)
-
-  }
-
-  def queryRelationImpl[T <: Product, F <: Product](table: Table[T], x: T)(implicit clsTag: ClassTag[F]): List[F] = {
-    val tb = table.followedTables(clsTag.runtimeClass)
-    val value: Any = Util.findFieldValueFromClassByName(x, table.primaryKeyName)
-    val followedTableJoinColumnName = s"${table.name}_${tb.name}"
-    val columnNameString = tb.columnName.map(x => s"`${tb.name}`.`$x`").mkString(",")
-    val sql =
-      s"SELECT $columnNameString" +
-          s" FROM `${tb.name}`" +
-          s" JOIN `${table.name}`" +
-          s" ON `${tb.name}`.`$followedTableJoinColumnName`=`${table.name}`.`${table.primaryKeyName}`" +
-          s" WHERE `${table.name}`.`${table.primaryKeyName}`='$value';"
-    Logger.logginSQL(sql)
-    ExecuteSQL.executeQuerySQL[F](sql, tb.columnType)
-  }
-
+  
 }
