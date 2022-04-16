@@ -8,6 +8,7 @@ import com.parsley.orm.util.Util
 import scala.reflect.ClassTag
 
 object QueryManyToManyRelationImpl {
+
   def queryManyToManyImpl[T <: Product, F <: Product](table: Table[T], x: T)(implicit clsTag: ClassTag[F], tag: ClassTag[T]): List[F] = {
     val relationTable = table.manyToManyTables(clsTag.runtimeClass)
     val manyToManyRelationTableName = Util.getRelationTableName(table.name, relationTable.name)
@@ -26,4 +27,5 @@ object QueryManyToManyRelationImpl {
     ExecuteSQL.executeQuerySQL[F](sql, relationTable.columnType)
 
   }
+
 }

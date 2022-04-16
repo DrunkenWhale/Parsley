@@ -1,5 +1,6 @@
 package com.parsley.orm
 
+import com.parsley.connect.DataBaseManager
 import com.parsley.connect.execute.ExecuteSQL
 import com.parsley.orm.attribute.{AutoIncrement, Indexed, NotNull, PrimaryKey, Unique}
 import com.parsley.orm.curd.update.UpdateOperation
@@ -8,10 +9,16 @@ import scala.reflect.ClassTag
 
 object DSL {
 
+  /*------------------------------transaction-------------------------------------------------*/
+
+  def transaction(param: Any*): Unit = {
+    DataBaseManager.commit()
+  }
+
   /*------------------------------build relation----------------------------------------------*/
 
   extension (mainTable: Table[_]) {
-    
+
     def <==(followTable: Table[_]) = {
       followTable.followingTables.put(mainTable.clazz, mainTable)
       mainTable.followedTables.put(followTable.clazz, followTable)

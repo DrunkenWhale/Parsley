@@ -8,6 +8,7 @@ import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 private[parsley] object ExecuteSQL {
+  
   def executeSQL(sql: String): Boolean = {
     DataBaseManager.preparedStatement(sql).execute
   }
