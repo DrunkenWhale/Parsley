@@ -11,10 +11,6 @@ object DSL {
 
   /*------------------------------transaction-------------------------------------------------*/
 
-  def transaction(param: Any*): Unit = {
-    DataBaseManager.commit()
-  }
-
   /*------------------------------build relation----------------------------------------------*/
 
   extension (mainTable: Table[_]) {
@@ -65,4 +61,5 @@ object DSL {
   val notNull = new NotNull()
   val unique = new Unique()
   val indexed = new Indexed()
+  
 }
